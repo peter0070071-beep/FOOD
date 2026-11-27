@@ -92,6 +92,13 @@
   @media (max-width: 480px) { #book-fab { padding: .7rem 1.1rem .7rem .8rem; font-size: .82rem; } #book-fab .fab-sub { display: none; } }
   .shimmer-text { background: linear-gradient(100deg, #b8a67c 0%, #b8a67c 35%, #fffaf0 50%, #b8a67c 65%, #b8a67c 100%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; animation: textShine 3.8s linear infinite; }
   @keyframes textShine { from { background-position: 150% 0; } to { background-position: -100% 0; } }
+  /* ===== 文字滑過閃亮效果 ===== */
+  .sparkle-text { position: relative; display: inline-block; cursor: default; color: #e4d9bd; background-image: linear-gradient(100deg, #e4d9bd 0%, #e4d9bd 42%, #ffffff 50%, #e4d9bd 58%, #e4d9bd 100%); background-size: 260% 100%; background-position: 130% 0; -webkit-background-clip: text; background-clip: text; transition: text-shadow .4s; }
+  .sparkle-text:hover { color: transparent; -webkit-text-fill-color: transparent; animation: sparkleSweep 1.4s ease-out infinite; filter: drop-shadow(0 0 10px rgba(255,240,200,.55)); }
+  .sparkle-text.shimmer-text { color: transparent; -webkit-text-fill-color: transparent; }
+  @keyframes sparkleSweep { from { background-position: 130% 0; } to { background-position: -30% 0; } }
+  .md-star { position: fixed; z-index: 80; pointer-events: none; width: 14px; height: 14px; margin: -7px 0 0 -7px; background: radial-gradient(circle, #fffbea 0 18%, rgba(255,240,190,.9) 30%, transparent 70%); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); animation: starPop .9s ease-out forwards; }
+  @keyframes starPop { 0% { opacity: 0; transform: scale(.2) rotate(0deg); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(-16px) scale(1.5) rotate(110deg); } }
   @keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
   @keyframes toastIn { from { opacity: 0; transform: translateY(-14px) } to { opacity: 1; transform: none } }
 </style>
@@ -214,8 +221,8 @@
   <div id="hero-dots" class="absolute bottom-9 right-6 sm:right-10 z-10 flex gap-3"></div>
   <div class="relative z-10 text-center px-6 pt-24 max-w-4xl">
     <p class="font-display text-gold-400 tracking-[.5em] text-xs sm:text-sm mb-6">ESTABLISHED IN PARIS · TAIPEI</p>
-    <h1 class="font-tc font-black text-4xl sm:text-6xl lg:text-7xl leading-tight gold-text">在台北也能吃到的<br class="sm:hidden">歐洲直送饗宴</h1>
-    <p class="font-display font-bold text-lg sm:text-2xl tracking-[.18em] shimmer-text mt-5">Dorado y Crujiente, el Arte de la Tradición</p>
+    <h1 data-sparkle class="sparkle-text font-display font-bold text-4xl sm:text-6xl lg:text-7xl leading-tight">Un Banquete Europeo,<br class="sm:hidden"> Directo a Taipéi</h1>
+    <p data-sparkle class="sparkle-text shimmer-text font-tc font-bold text-sm sm:text-lg tracking-[.3em] mt-5">在台北也能吃到的歐洲直送饗宴</p>
     <div class="divider my-8"><i data-lucide="sparkles" class="w-5 h-5"></i></div>
     <p class="font-serif italic text-lg sm:text-2xl text-gold-300/90 mb-10">Where golden crispness meets centuries of craft.</p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
@@ -896,6 +903,20 @@
     el.addEventListener('click', e => { if (e.target.closest('[data-promo-close]')) hide(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && el.classList.contains('show')) hide(); });
     setTimeout(() => { el.classList.add('show'); el.setAttribute('aria-hidden', 'false'); }, 3500);
+  })();
+
+  /* ================= 文字滑過閃亮星點 ================= */
+  (function sparkle() {
+    let last = 0;
+    document.addEventListener('mousemove', e => {
+      const t = e.target.closest && e.target.closest('[data-sparkle]'); if (!t) return;
+      const now = performance.now(); if (now - last < 55) return; last = now;
+      const st = document.createElement('span'); st.className = 'md-star';
+      st.style.left = (e.clientX + (Math.random() * 40 - 20)) + 'px';
+      st.style.top = (e.clientY + (Math.random() * 30 - 15)) + 'px';
+      const sc = .6 + Math.random() * .9; st.style.width = st.style.height = (14 * sc) + 'px';
+      document.body.appendChild(st); setTimeout(() => st.remove(), 950);
+    });
   })();
 
   /* ================= 初始化 ================= */
