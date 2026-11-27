@@ -19,8 +19,8 @@
       extend: {
         colors: {
           gold: { 300: '#e4d9bd', 400: '#d2c29a', 500: '#b8a67c', 600: '#9a8a63', 700: '#756844' },
-          ink: { 900: '#0c0b0a', 800: '#151311', 700: '#1f1b18', 600: '#2a2521' },
-          wine: { 700: '#3a1520', 800: '#26101a' }
+          ink: { 900: '#1d1814', 800: '#28211b', 700: '#342b23', 600: '#3d332a' },
+          wine: { 700: '#5e2c3d', 800: '#4a2432' }
         },
         fontFamily: {
           display: ['Cinzel', 'Cormorant Garamond', 'Noto Serif TC', 'serif'],
@@ -35,7 +35,7 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
-  body { font-family: 'Noto Serif TC', 'Cormorant Garamond', serif; background: #0c0b0a; color: #ebe5d8; }
+  body { font-family: 'Noto Serif TC', 'Cormorant Garamond', serif; background: #1d1814; color: #ebe5d8; }
   .gold-text { color: #e4d9bd; }
   .gold-btn { background: #cdbd94; color: #17120d; transition: background .2s, transform .15s; letter-spacing: .08em; }
   .gold-btn:hover { background: #e4d9bd; }
@@ -48,7 +48,7 @@
   .divider::before, .divider::after { content: ''; height: 1px; width: 72px; background: linear-gradient(90deg, transparent, #b8a67c); }
   .divider::after { transform: scaleX(-1); }
   .damask { background-image: radial-gradient(circle at 25% 25%, rgba(184,166,124,.035) 0 1.5px, transparent 3px), radial-gradient(circle at 75% 75%, rgba(184,166,124,.035) 0 1.5px, transparent 3px); background-size: 38px 38px; }
-  .img-fallback { background: linear-gradient(135deg, #3d0d1a, #16110d 60%, #756844); }
+  .img-fallback { background: linear-gradient(135deg, #5e1a30, #2a221b 60%, #756844); }
   .reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s ease, transform .8s ease; }
   .reveal.show { opacity: 1; transform: none; }
   .tab-active { background: #cdbd94; color: #17120d; border-color: transparent; }
@@ -58,15 +58,15 @@
   .faq-body.open { grid-template-rows: 1fr; }
   .faq-body > div { overflow: hidden; }
   #cart-drawer { transition: transform .35s cubic-bezier(.2,.8,.2,1); }
-  ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #0d0a08; } ::-webkit-scrollbar-thumb { background: #756844; border-radius: 8px; }
-  input, select, textarea { background: #16110d; border: 1px solid rgba(184,166,124,.35); color: #efe6d2; border-radius: 6px; padding: .6rem .8rem; width: 100%; outline: none; }
+  ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #1a1612; } ::-webkit-scrollbar-thumb { background: #756844; border-radius: 8px; }
+  input, select, textarea { background: #2a221b; border: 1px solid rgba(184,166,124,.35); color: #efe6d2; border-radius: 6px; padding: .6rem .8rem; width: 100%; outline: none; }
   input:focus, select:focus, textarea:focus { border-color: #b8a67c; box-shadow: 0 0 0 2px rgba(184,166,124,.25); }
-  .map-grid { background-color: #1b1610; background-image: linear-gradient(rgba(184,166,124,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(184,166,124,.08) 1px, transparent 1px); background-size: 34px 34px; }
+  .map-grid { background-color: #2c241b; background-image: linear-gradient(rgba(184,166,124,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(184,166,124,.08) 1px, transparent 1px); background-size: 34px 34px; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
   /* ===== 促銷優惠彈窗 ===== */
   #promo-popup { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 45; width: min(360px, calc(100vw - 2rem)); opacity: 0; transform: translateY(24px); pointer-events: none; transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
   #promo-popup.show { opacity: 1; transform: none; pointer-events: auto; }
-  #promo-popup .promo-card { position: relative; padding: 2.1rem 1.75rem 1.6rem; text-align: center; background: linear-gradient(160deg, #26101a 0%, #151311 55%, #0c0b0a 100%); border: 1px solid rgba(184,166,124,.55); box-shadow: 0 24px 60px rgba(0,0,0,.65), 0 0 0 1px rgba(0,0,0,.6), inset 0 0 0 5px #151311, inset 0 0 0 6px rgba(184,166,124,.28); }
+  #promo-popup .promo-card { position: relative; padding: 2.1rem 1.75rem 1.6rem; text-align: center; background: linear-gradient(160deg, #4a2432 0%, #28211b 55%, #1d1814 100%); border: 1px solid rgba(184,166,124,.55); box-shadow: 0 24px 60px rgba(0,0,0,.65), 0 0 0 1px rgba(0,0,0,.6), inset 0 0 0 5px #28211b, inset 0 0 0 6px rgba(184,166,124,.28); }
   #promo-popup .promo-card::before { content: ''; position: absolute; top: 0; left: 50%; width: 120px; height: 1px; transform: translateX(-50%); background: linear-gradient(90deg, transparent, #e4d9bd, transparent); }
   #promo-popup .promo-close { position: absolute; top: .9rem; right: .9rem; width: 28px; height: 28px; display: grid; place-items: center; color: #b8a67c; border: 1px solid transparent; border-radius: 50%; transition: color .2s, border-color .2s; }
   #promo-popup .promo-close:hover { color: #e4d9bd; border-color: rgba(184,166,124,.5); }
@@ -105,6 +105,10 @@
   .damask { background-position: 0 var(--py, 0px); }
   [data-parallax] { will-change: transform; }
   [data-depth] { will-change: translate; }
+  /* ===== 明亮化微調 ===== */
+  #hero-content h1, #hero-content p { text-shadow: 0 2px 18px rgba(0,0,0,.55); }
+  body { background-image: radial-gradient(ellipse at 50% 0%, rgba(205,189,148,.08), transparent 60%); }
+  #meteor-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 95; pointer-events: none; }
   @keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
   @keyframes toastIn { from { opacity: 0; transform: translateY(-14px) } to { opacity: 1; transform: none } }
 </style>
@@ -112,6 +116,7 @@
 
 <body class="antialiased">
 <div id="scroll-progress" aria-hidden="true"></div>
+<canvas id="meteor-canvas" aria-hidden="true"></canvas>
 
 <!-- ===================== Header / Navigation ===================== -->
 <header id="top" class="fixed top-0 inset-x-0 z-40 transition-all duration-300">
@@ -169,13 +174,13 @@
   <div id="hero-carousel" class="absolute inset-0" aria-roledescription="carousel" aria-label="Maison Doré 場景輪播">
     <div class="hero-slide active" data-rate="1.7" data-video="videos/castle.mp4,https://assets.mixkit.co/videos/25230/25230-720.mp4,https://assets.mixkit.co/videos/25230/25230-1080.mp4,https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-medieval-castle-in-the-mountain-25230-large.mp4,https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-medieval-castle-in-the-mountain-25230-medium.mp4" data-poster="" data-label-en="LE CHÂTEAU" data-label-zh="古堡空拍・霍亨索倫">
       <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" class="hero-art" aria-hidden="true">
-        <defs><linearGradient id="skyA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b0a1a"/><stop offset=".55" stop-color="#3a1520"/><stop offset="1" stop-color="#b8844a"/></linearGradient>
+        <defs><linearGradient id="skyA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b0a1a"/><stop offset=".55" stop-color="#5e2c3d"/><stop offset="1" stop-color="#b8844a"/></linearGradient>
         <radialGradient id="moonA"><stop offset="0" stop-color="#fff6dc"/><stop offset="1" stop-color="#fff6dc" stop-opacity="0"/></radialGradient></defs>
         <rect width="1600" height="900" fill="url(#skyA)"/>
         <circle cx="1230" cy="210" r="150" fill="url(#moonA)" opacity=".55"/><circle cx="1230" cy="210" r="46" fill="#fbf0cf"/>
         <g fill="#fbf0cf" opacity=".7"><circle cx="220" cy="120" r="2"/><circle cx="480" cy="210" r="1.6"/><circle cx="760" cy="90" r="2"/><circle cx="980" cy="170" r="1.6"/><circle cx="1420" cy="90" r="2"/><circle cx="90" cy="260" r="1.6"/></g>
-        <path d="M0 640 Q400 560 800 610 T1600 590 V900 H0Z" fill="#1a1410"/>
-        <g fill="#0d0b0a">
+        <path d="M0 640 Q400 560 800 610 T1600 590 V900 H0Z" fill="#2a2119"/>
+        <g fill="#1a1612">
           <rect x="560" y="430" width="480" height="260"/>
           <rect x="500" y="330" width="90" height="360"/><polygon points="490,330 545,215 600,330"/>
           <rect x="1010" y="330" width="90" height="360"/><polygon points="1000,330 1055,215 1110,330"/>
@@ -185,12 +190,12 @@
           <rect x="1098" y="480" width="18" height="24"/><rect x="1128" y="480" width="18" height="24"/><rect x="1158" y="480" width="18" height="24"/><rect x="1188" y="480" width="18" height="24"/><rect x="1218" y="480" width="18" height="24"/>
         </g>
         <g fill="#f3c777"><rect x="780" y="300" width="14" height="34" rx="7"/><rect x="806" y="300" width="14" height="34" rx="7"/><rect x="530" y="400" width="14" height="30" rx="7"/><rect x="1056" y="400" width="14" height="30" rx="7"/><rect x="620" y="500" width="14" height="34" rx="7"/><rect x="700" y="500" width="14" height="34" rx="7"/><rect x="886" y="500" width="14" height="34" rx="7"/><rect x="966" y="500" width="14" height="34" rx="7"/><path d="M770 690 v-90 a30 30 0 0 1 60 0 v90z"/></g>
-        <path d="M0 700 Q400 660 800 690 T1600 680 V900 H0Z" fill="#0d0b0a"/>
+        <path d="M0 700 Q400 660 800 690 T1600 680 V900 H0Z" fill="#1a1612"/>
       </svg>
     </div>
     <div class="hero-slide" data-rate="1.7" data-video="videos/salon.mp4,https://assets.mixkit.co/videos/38829/38829-720.mp4,https://assets.mixkit.co/videos/38829/38829-1080.mp4,https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-an-old-castle-on-top-of-a-38829-large.mp4,https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-an-old-castle-on-top-of-a-38829-medium.mp4" data-poster="" data-label-en="LA FORTERESSE" data-label-zh="古堡空拍・捷克">
       <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" class="hero-art" aria-hidden="true">
-        <defs><linearGradient id="wallB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26101a"/><stop offset="1" stop-color="#0c0b0a"/></linearGradient>
+        <defs><linearGradient id="wallB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a2432"/><stop offset="1" stop-color="#1d1814"/></linearGradient>
         <radialGradient id="glowB"><stop offset="0" stop-color="#f3c777" stop-opacity=".75"/><stop offset="1" stop-color="#f3c777" stop-opacity="0"/></radialGradient></defs>
         <rect width="1600" height="900" fill="url(#wallB)"/>
         <g fill="none" stroke="#b8a67c" stroke-opacity=".55" stroke-width="3">
@@ -201,7 +206,7 @@
         <circle cx="800" cy="250" r="230" fill="url(#glowB)"/>
         <g stroke="#e4d9bd" stroke-width="3" fill="none"><line x1="800" y1="0" x2="800" y2="150"/><path d="M700 220 Q800 270 900 220"/><path d="M730 190 H870"/></g>
         <g fill="#fbe9b0"><circle cx="700" cy="226" r="9"/><circle cx="750" cy="246" r="9"/><circle cx="800" cy="252" r="9"/><circle cx="850" cy="246" r="9"/><circle cx="900" cy="226" r="9"/><circle cx="740" cy="190" r="8"/><circle cx="800" cy="170" r="8"/><circle cx="860" cy="190" r="8"/></g>
-        <rect y="700" width="1600" height="200" fill="#120d0a"/>
+        <rect y="700" width="1600" height="200" fill="#1f1914"/>
         <g fill="#2a1a14" stroke="#b8a67c" stroke-opacity=".5"><rect x="210" y="740" width="320" height="22" rx="4"/><rect x="640" y="760" width="320" height="22" rx="4"/><rect x="1070" y="740" width="320" height="22" rx="4"/></g>
         <g fill="#f3c777"><rect x="365" y="705" width="6" height="34"/><rect x="795" y="725" width="6" height="34"/><rect x="1225" y="705" width="6" height="34"/></g>
         <g fill="#fff0b8"><circle cx="368" cy="698" r="7"/><circle cx="798" cy="718" r="7"/><circle cx="1228" cy="698" r="7"/></g>
@@ -209,12 +214,12 @@
     </div>
     <div class="hero-slide" data-video="videos/hall.mp4,https://assets.mixkit.co/videos/51242/51242-720.mp4,https://assets.mixkit.co/videos/51242/51242-1080.mp4,https://assets.mixkit.co/videos/preview/mixkit-a-couple-of-girls-talking-at-the-restaurant-table-suddenly-51242-large.mp4,https://assets.mixkit.co/videos/preview/mixkit-a-couple-of-girls-talking-at-the-restaurant-table-suddenly-51242-medium.mp4" data-poster="" data-label-en="LA TABLE" data-label-zh="餐桌歡聚・談笑風生">
       <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" class="hero-art" aria-hidden="true">
-        <defs><linearGradient id="floorC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1610"/><stop offset="1" stop-color="#3a1520"/></linearGradient>
+        <defs><linearGradient id="floorC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c241b"/><stop offset="1" stop-color="#5e2c3d"/></linearGradient>
         <radialGradient id="glowC"><stop offset="0" stop-color="#f3c777" stop-opacity=".6"/><stop offset="1" stop-color="#f3c777" stop-opacity="0"/></radialGradient></defs>
-        <rect width="1600" height="900" fill="#0c0b0a"/>
+        <rect width="1600" height="900" fill="#1d1814"/>
         <circle cx="800" cy="430" r="380" fill="url(#glowC)"/>
         <path d="M0 0 L560 250 V620 L0 900Z" fill="#15110e"/><path d="M1600 0 L1040 250 V620 L1600 900Z" fill="#15110e"/>
-        <rect x="560" y="250" width="480" height="370" fill="#26101a"/>
+        <rect x="560" y="250" width="480" height="370" fill="#4a2432"/>
         <path d="M640 620 V400 a160 160 0 0 1 320 0 V620z" fill="#f3c777" opacity=".35"/>
         <path d="M0 900 L560 620 H1040 L1600 900Z" fill="url(#floorC)"/>
         <g stroke="#b8a67c" stroke-opacity=".35" fill="none"><path d="M800 620 L800 900"/><path d="M680 620 L420 900"/><path d="M920 620 L1180 900"/><path d="M600 700 H1000"/><path d="M520 790 H1080"/></g>
@@ -223,7 +228,7 @@
       </svg>
     </div>
   </div>
-  <div class="absolute inset-0 bg-gradient-to-b from-ink-900/90 via-ink-900/65 to-ink-900"></div>
+  <div class="absolute inset-0 bg-gradient-to-b from-ink-900/35 via-ink-900/10 to-ink-900/90"></div>
   <div class="absolute inset-0 damask opacity-60"></div>
   <div id="hero-dots" class="absolute bottom-9 right-6 sm:right-10 z-10 flex gap-3"></div>
   <div id="hero-content" class="relative z-10 text-center px-6 pt-24 max-w-4xl">
@@ -248,9 +253,9 @@
       <h2 data-depth="-0.07" class="font-tc text-3xl sm:text-4xl font-bold gold-text mb-6">品牌故事</h2>
       <p class="leading-loose text-[#cfc8b8] mb-6">Maison Doré 的靈感，來自十九世紀巴黎的宮廷廚房。我們將東方鍋貼的「底酥、面嫩、汁多」，以歐式的精緻工序重新詮釋——每一顆都是一件可以食用的金色工藝品。</p>
       <ul class="grid gap-4 mb-8">
-        <li class="flex gap-4"><span class="w-10 h-10 shrink-0 rounded-full frame grid place-items-center"><i data-lucide="wheat" class="w-5 h-5 text-gold-500"></i></span><div><h3 class="font-bold text-gold-300">法國在地豬肉</h3><p class="text-sm text-[#a8a190] leading-relaxed">嚴選法國放牧豬肉，肥瘦比例 3:7，肉質鮮甜、不腥不膩。</p></div></li>
-        <li class="flex gap-4"><span class="w-10 h-10 shrink-0 rounded-full frame grid place-items-center"><i data-lucide="hand" class="w-5 h-5 text-gold-500"></i></span><div><h3 class="font-bold text-gold-300">每日現包</h3><p class="text-sm text-[#a8a190] leading-relaxed">清晨手工擀皮、手工摺出 18 摺，絕不隔夜。</p></div></li>
-        <li class="flex gap-4"><span class="w-10 h-10 shrink-0 rounded-full frame grid place-items-center"><i data-lucide="flame" class="w-5 h-5 text-gold-500"></i></span><div><h3 class="font-bold text-gold-300">黃金煎脆比例</h3><p class="text-sm text-[#a8a190] leading-relaxed">以獨門水粉比例煎出薄如蟬翼的金色脆底，咬下即碎。</p></div></li>
+        <li class="flex gap-4"><span class="w-10 h-10 shrink-0 rounded-full frame grid place-items-center"><i data-lucide="wheat" class="w-5 h-5 text-gold-500"></i></span><div><h3 class="font-bold text-gold-300">法國在地豬肉</h3><p class="text-sm text-[#c4bda9] leading-relaxed">嚴選法國放牧豬肉，肥瘦比例 3:7，肉質鮮甜、不腥不膩。</p></div></li>
+        <li class="flex gap-4"><span class="w-10 h-10 shrink-0 rounded-full frame grid place-items-center"><i data-lucide="hand" class="w-5 h-5 text-gold-500"></i></span><div><h3 class="font-bold text-gold-300">每日現包</h3><p class="text-sm text-[#c4bda9] leading-relaxed">清晨手工擀皮、手工摺出 18 摺，絕不隔夜。</p></div></li>
+        <li class="flex gap-4"><span class="w-10 h-10 shrink-0 rounded-full frame grid place-items-center"><i data-lucide="flame" class="w-5 h-5 text-gold-500"></i></span><div><h3 class="font-bold text-gold-300">黃金煎脆比例</h3><p class="text-sm text-[#c4bda9] leading-relaxed">以獨門水粉比例煎出薄如蟬翼的金色脆底，咬下即碎。</p></div></li>
       </ul>
     </div>
     <div class="reveal order-1 lg:order-2 relative">
@@ -261,9 +266,9 @@
 
   <!-- Stats -->
   <div class="max-w-6xl mx-auto mt-24 grid grid-cols-1 sm:grid-cols-3 gap-6 reveal">
-    <div class="frame text-center py-10 bg-ink-800/60"><div class="font-display text-5xl gold-text"><span data-count="10000">0</span>+</div><p class="mt-3 tracking-widest text-sm text-[#a8a190]">每日賣出（顆）</p></div>
-    <div class="frame text-center py-10 bg-ink-800/60"><div class="font-display text-5xl gold-text"><span data-count="100">0</span>%</div><p class="mt-3 tracking-widest text-sm text-[#a8a190]">現點現煎</p></div>
-    <div class="frame text-center py-10 bg-ink-800/60"><div class="font-display text-5xl gold-text"><span data-count="200">0</span>年</div><p class="mt-3 tracking-widest text-sm text-[#a8a190]">老店技術傳承</p></div>
+    <div class="frame text-center py-10 bg-ink-800/60"><div class="font-display text-5xl gold-text"><span data-count="10000">0</span>+</div><p class="mt-3 tracking-widest text-sm text-[#c4bda9]">每日賣出（顆）</p></div>
+    <div class="frame text-center py-10 bg-ink-800/60"><div class="font-display text-5xl gold-text"><span data-count="100">0</span>%</div><p class="mt-3 tracking-widest text-sm text-[#c4bda9]">現點現煎</p></div>
+    <div class="frame text-center py-10 bg-ink-800/60"><div class="font-display text-5xl gold-text"><span data-count="200">0</span>年</div><p class="mt-3 tracking-widest text-sm text-[#c4bda9]">老店技術傳承</p></div>
   </div>
 </section>
 
@@ -292,14 +297,14 @@
     <div class="text-center mb-14 reveal">
       <p class="font-display text-gold-500 tracking-[.4em] text-xs mb-3">COFFRETS CADEAUX</p>
       <h2 data-depth="-0.07" class="font-tc text-3xl sm:text-4xl font-bold gold-text">冷凍禮盒專區</h2>
-      <p class="mt-4 text-[#a8a190]">節慶饋贈、家庭聚餐，把巴黎的金黃帶回家。</p>
+      <p class="mt-4 text-[#c4bda9]">節慶饋贈、家庭聚餐，把巴黎的金黃帶回家。</p>
     </div>
     <div id="gift-grid" class="grid lg:grid-cols-3 gap-8"></div>
 
     <div class="grid sm:grid-cols-3 gap-6 mt-14 reveal">
-      <div class="text-center p-6 frame bg-ink-800/60"><i data-lucide="snowflake" class="w-8 h-8 mx-auto text-gold-500 mb-3"></i><h3 class="font-bold text-gold-300 mb-2">液態氮急速冷凍</h3><p class="text-sm text-[#a8a190] leading-relaxed">−196°C 瞬間鎖鮮，保留肉汁與麵皮口感。</p></div>
-      <div class="text-center p-6 frame bg-ink-800/60"><i data-lucide="timer" class="w-8 h-8 mx-auto text-gold-500 mb-3"></i><h3 class="font-bold text-gold-300 mb-2">8 分鐘還原門市美味</h3><p class="text-sm text-[#a8a190] leading-relaxed">不需解凍，水煎 8 分鐘即得金黃脆底。</p></div>
-      <div class="text-center p-6 frame bg-ink-800/60"><i data-lucide="truck" class="w-8 h-8 mx-auto text-gold-500 mb-3"></i><h3 class="font-bold text-gold-300 mb-2">全程冷鏈宅配</h3><p class="text-sm text-[#a8a190] leading-relaxed">黑貓冷凍宅配，隔日到貨，附保冰袋。</p></div>
+      <div class="text-center p-6 frame bg-ink-800/60"><i data-lucide="snowflake" class="w-8 h-8 mx-auto text-gold-500 mb-3"></i><h3 class="font-bold text-gold-300 mb-2">液態氮急速冷凍</h3><p class="text-sm text-[#c4bda9] leading-relaxed">−196°C 瞬間鎖鮮，保留肉汁與麵皮口感。</p></div>
+      <div class="text-center p-6 frame bg-ink-800/60"><i data-lucide="timer" class="w-8 h-8 mx-auto text-gold-500 mb-3"></i><h3 class="font-bold text-gold-300 mb-2">8 分鐘還原門市美味</h3><p class="text-sm text-[#c4bda9] leading-relaxed">不需解凍，水煎 8 分鐘即得金黃脆底。</p></div>
+      <div class="text-center p-6 frame bg-ink-800/60"><i data-lucide="truck" class="w-8 h-8 mx-auto text-gold-500 mb-3"></i><h3 class="font-bold text-gold-300 mb-2">全程冷鏈宅配</h3><p class="text-sm text-[#c4bda9] leading-relaxed">黑貓冷凍宅配，隔日到貨，附保冰袋。</p></div>
     </div>
   </div>
 </section>
@@ -354,7 +359,7 @@
   <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
     <div>
       <div class="flex items-center gap-3 mb-4"><span class="w-10 h-10 rounded-full frame grid place-items-center"><i data-lucide="crown" class="w-5 h-5 text-gold-500"></i></span><span class="font-display text-lg gold-text tracking-[.18em]">MAISON DORÉ</span></div>
-      <p class="text-sm text-[#a8a190] leading-relaxed mb-5">金黃酥脆，傳承手藝的極致美味。<br>客服信箱：hello@maisondore.example<br>客服專線：02-1234-5678（10:00–20:00）</p>
+      <p class="text-sm text-[#c4bda9] leading-relaxed mb-5">金黃酥脆，傳承手藝的極致美味。<br>客服信箱：hello@maisondore.example<br>客服專線：02-1234-5678（10:00–20:00）</p>
       <div class="flex gap-3">
         <a href="#" aria-label="Instagram" class="w-10 h-10 grid place-items-center rounded-full border border-gold-500/40 hover:bg-gold-500 hover:text-ink-900 transition text-gold-400"><i data-lucide="instagram" class="w-4 h-4"></i></a>
         <a href="#" aria-label="Facebook" class="w-10 h-10 grid place-items-center rounded-full border border-gold-500/40 hover:bg-gold-500 hover:text-ink-900 transition text-gold-400"><i data-lucide="facebook" class="w-4 h-4"></i></a>
@@ -363,7 +368,7 @@
     </div>
     <div>
       <h3 class="font-bold text-gold-300 tracking-widest mb-4">快速連結</h3>
-      <ul class="grid gap-2 text-sm text-[#a8a190]">
+      <ul class="grid gap-2 text-sm text-[#c4bda9]">
         <li><a class="hover:text-gold-400" href="#story">品牌故事</a></li>
         <li><a class="hover:text-gold-400" href="#order">線上點餐</a></li>
         <li><a class="hover:text-gold-400" href="#gifts">冷凍禮盒</a></li>
@@ -373,7 +378,7 @@
     </div>
     <div>
       <h3 class="font-bold text-gold-300 tracking-widest mb-4">訂閱電子報</h3>
-      <p class="text-sm text-[#a8a190] mb-4">新品與節慶禮盒優先通知，首次訂閱贈 $50 折價券。</p>
+      <p class="text-sm text-[#c4bda9] mb-4">新品與節慶禮盒優先通知，首次訂閱贈 $50 折價券。</p>
       <form id="newsletter-form" class="flex gap-2" novalidate>
         <label for="nl-email" class="sr-only">電子郵件</label>
         <input id="nl-email" type="email" placeholder="your@email.com" required>
@@ -397,7 +402,7 @@
   </div>
   <div id="cart-items" class="flex-1 overflow-y-auto px-6 py-4 grid gap-4 content-start"></div>
   <div class="border-t border-gold-500/25 px-6 py-5 bg-ink-900/60">
-    <div class="flex justify-between text-sm text-[#a8a190] mb-1"><span>小計</span><span id="cart-subtotal">NT$ 0</span></div>
+    <div class="flex justify-between text-sm text-[#c4bda9] mb-1"><span>小計</span><span id="cart-subtotal">NT$ 0</span></div>
     <div class="flex justify-between text-lg font-bold mb-4"><span>總金額</span><span id="cart-total" class="gold-text">NT$ 0</span></div>
     <button id="checkout-btn" class="gold-btn w-full rounded-full py-3.5 font-bold tracking-widest disabled:opacity-40 disabled:cursor-not-allowed">前往結帳</button>
   </div>
@@ -423,14 +428,14 @@
       </fieldset>
 
       <div class="grid sm:grid-cols-2 gap-4 mb-4">
-        <div><label for="f-name" class="block text-sm mb-1 text-[#a8a190]">姓名 *</label><input id="f-name" name="name" type="text" required autocomplete="name"><p class="err text-xs text-red-400 mt-1 h-4" data-for="name"></p></div>
-        <div><label for="f-phone" class="block text-sm mb-1 text-[#a8a190]">手機 *</label><input id="f-phone" name="phone" type="tel" inputmode="tel" placeholder="0912345678" required autocomplete="tel"><p class="err text-xs text-red-400 mt-1 h-4" data-for="phone"></p></div>
+        <div><label for="f-name" class="block text-sm mb-1 text-[#c4bda9]">姓名 *</label><input id="f-name" name="name" type="text" required autocomplete="name"><p class="err text-xs text-red-400 mt-1 h-4" data-for="name"></p></div>
+        <div><label for="f-phone" class="block text-sm mb-1 text-[#c4bda9]">手機 *</label><input id="f-phone" name="phone" type="tel" inputmode="tel" placeholder="0912345678" required autocomplete="tel"><p class="err text-xs text-red-400 mt-1 h-4" data-for="phone"></p></div>
       </div>
-      <div class="mb-4"><label for="f-email" class="block text-sm mb-1 text-[#a8a190]">Email *</label><input id="f-email" name="email" type="email" required autocomplete="email"><p class="err text-xs text-red-400 mt-1 h-4" data-for="email"></p></div>
+      <div class="mb-4"><label for="f-email" class="block text-sm mb-1 text-[#c4bda9]">Email *</label><input id="f-email" name="email" type="email" required autocomplete="email"><p class="err text-xs text-red-400 mt-1 h-4" data-for="email"></p></div>
 
-      <div id="store-field" class="mb-4"><label for="f-store" class="block text-sm mb-1 text-[#a8a190]">取餐／用餐門市 *</label><select id="f-store" name="store"></select></div>
-      <div id="addr-field" class="mb-4 hidden"><label for="f-addr" class="block text-sm mb-1 text-[#a8a190]">宅配地址 *</label><input id="f-addr" name="address" type="text" autocomplete="street-address"><p class="err text-xs text-red-400 mt-1 h-4" data-for="address"></p></div>
-      <div class="mb-6"><label for="f-note" class="block text-sm mb-1 text-[#a8a190]">備註</label><textarea id="f-note" name="note" rows="2" placeholder="例：不加辣、餐具需求…"></textarea></div>
+      <div id="store-field" class="mb-4"><label for="f-store" class="block text-sm mb-1 text-[#c4bda9]">取餐／用餐門市 *</label><select id="f-store" name="store"></select></div>
+      <div id="addr-field" class="mb-4 hidden"><label for="f-addr" class="block text-sm mb-1 text-[#c4bda9]">宅配地址 *</label><input id="f-addr" name="address" type="text" autocomplete="street-address"><p class="err text-xs text-red-400 mt-1 h-4" data-for="address"></p></div>
+      <div class="mb-6"><label for="f-note" class="block text-sm mb-1 text-[#c4bda9]">備註</label><textarea id="f-note" name="note" rows="2" placeholder="例：不加辣、餐具需求…"></textarea></div>
 
       <div class="border-t border-gold-500/25 pt-5 mb-6 text-sm">
         <div id="co-lines" class="grid gap-1 mb-3 text-[#cfc5ad]"></div>
@@ -446,7 +451,7 @@
     <div id="checkout-success" class="hidden p-10 text-center">
       <div class="w-20 h-20 mx-auto rounded-full gold-btn grid place-items-center mb-6"><i data-lucide="check" class="w-10 h-10"></i></div>
       <h2 class="font-tc text-3xl gold-text font-bold mb-3">訂單已建立</h2>
-      <p class="text-[#a8a190] mb-2">訂單編號 <span id="ok-no" class="font-display text-gold-300 tracking-widest"></span></p>
+      <p class="text-[#c4bda9] mb-2">訂單編號 <span id="ok-no" class="font-display text-gold-300 tracking-widest"></span></p>
       <p id="ok-msg" class="text-[#cfc5ad] leading-relaxed mb-8"></p>
       <button id="ok-close" class="gold-btn rounded-full px-10 py-3 font-bold tracking-widest">回到首頁</button>
     </div>
@@ -472,9 +477,9 @@
     <h2 class="font-tc text-lg font-bold gold-text tracking-widest">鑄金禮遇・首購優惠</h2>
     <div class="promo-percent my-3">9<small>折</small></div>
     <p class="font-serif italic text-base text-gold-300/90">An exclusive welcome from our maison.</p>
-    <p class="mt-3 text-xs leading-relaxed text-[#a8a190]">即日起至 12 月 31 日，線上首次點餐享全單 9 折，<br>冷凍禮盒加贈精緻提袋。</p>
+    <p class="mt-3 text-xs leading-relaxed text-[#c4bda9]">即日起至 12 月 31 日，線上首次點餐享全單 9 折，<br>冷凍禮盒加贈精緻提袋。</p>
     <a href="#menu" data-promo-close class="gold-btn mt-5 inline-block w-full py-3 text-sm font-bold">立即品味</a>
-    <button type="button" data-promo-close class="mt-3 text-xs tracking-widest text-[#8d8674] hover:text-gold-300 transition-colors">稍後再說</button>
+    <button type="button" data-promo-close class="mt-3 text-xs tracking-widest text-[#aaa391] hover:text-gold-300 transition-colors">稍後再說</button>
   </div>
 </aside>
 
@@ -627,7 +632,7 @@
           '<div class="p-5 flex flex-col flex-1">' +
             '<div class="flex flex-wrap gap-1.5 mb-3">' + p.tags.map(tagHtml).join('') + spicyHtml(p.spicy) + '</div>' +
             '<h3 class="font-bold text-lg text-gold-300 mb-2">' + p.name + '</h3>' +
-            '<p class="text-sm text-[#a8a190] leading-relaxed mb-5 flex-1">' + p.desc + '</p>' +
+            '<p class="text-sm text-[#c4bda9] leading-relaxed mb-5 flex-1">' + p.desc + '</p>' +
             '<div class="flex items-center justify-between"><span class="font-display text-2xl gold-text">' + money(p.price) + '</span>' +
             '<button data-add="' + p.id + '" class="gold-btn rounded-full px-5 py-2 text-sm font-bold flex items-center gap-1.5"><i data-lucide="plus" class="w-4 h-4"></i>加入購物車</button></div>' +
           '</div></article>').join('');
@@ -648,7 +653,7 @@
       '<div class="p-6 flex flex-col flex-1">' +
         '<div class="flex flex-wrap gap-1.5 mb-3">' + g.tags.map(tagHtml).join('') + '</div>' +
         '<h3 class="font-bold text-xl text-gold-300 mb-2">' + g.name + '</h3>' +
-        '<p class="text-sm text-[#a8a190] leading-relaxed mb-6 flex-1">' + g.desc + '</p>' +
+        '<p class="text-sm text-[#c4bda9] leading-relaxed mb-6 flex-1">' + g.desc + '</p>' +
         '<div class="flex items-center justify-between gap-3"><span class="font-display text-3xl gold-text">' + money(g.price) + '</span>' +
         '<div class="flex gap-2"><button data-add="' + g.id + '" class="ghost-btn rounded-full px-4 py-2 text-sm font-bold" aria-label="加入購物車">加入購物車</button>' +
         '<button data-buy="' + g.id + '" class="gold-btn rounded-full px-4 py-2 text-sm font-bold">直接購買</button></div></div>' +
@@ -725,7 +730,7 @@
         return '<div class="flex gap-4 pb-4 border-b border-gold-500/15">' +
           '<img data-img src="' + it.img + '" alt="' + it.name + '" class="w-20 h-20 object-cover rounded-sm shrink-0 img-fallback">' +
           '<div class="flex-1 min-w-0"><h3 class="font-bold text-sm text-gold-300 leading-snug">' + it.name + '</h3>' +
-          '<p class="text-sm text-[#a8a190] mt-1">' + money(it.price) + '</p>' +
+          '<p class="text-sm text-[#c4bda9] mt-1">' + money(it.price) + '</p>' +
           '<div class="flex items-center justify-between mt-2">' +
             '<div class="flex items-center border border-gold-500/40 rounded-full">' +
               '<button data-dec="' + c.id + '" class="w-8 h-8 grid place-items-center hover:text-gold-400" aria-label="減少數量"><i data-lucide="minus" class="w-4 h-4"></i></button>' +
@@ -936,6 +941,56 @@
     }
     addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }, { passive: true });
     addEventListener('resize', frame); frame();
+  })();
+
+  /* ================= 流星滑鼠效果 ================= */
+  (function meteorCursor() {
+    const cv = document.getElementById('meteor-canvas'); if (!cv) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || matchMedia('(pointer: coarse)').matches) { cv.remove(); return; }
+    const ctx = cv.getContext('2d'); let W = 0, H = 0, dpr = 1;
+    function size() { dpr = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+    size(); addEventListener('resize', size);
+    const trail = [], meteors = []; let running = false, lastSpawn = 0, mx = -99, my = -99, inside = false;
+    addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY; inside = true;
+      const now = performance.now(); trail.push({ x: mx, y: my, t: now });
+      if (now - lastSpawn > 90) {
+        lastSpawn = now;
+        meteors.push({ x: mx + (Math.random() * 20 - 10), y: my + (Math.random() * 10 - 5), vx: -(4 + Math.random() * 4), vy: 3 + Math.random() * 3, len: 50 + Math.random() * 60, life: 1 });
+      }
+      if (!running) { running = true; requestAnimationFrame(loop); }
+    }, { passive: true });
+    document.addEventListener('mouseleave', () => { inside = false; });
+    function loop(now) {
+      ctx.clearRect(0, 0, W, H);
+      while (trail.length && now - trail[0].t > 420) trail.shift();
+      // 彗星拖尾
+      for (let i = 1; i < trail.length; i++) {
+        const a = trail[i - 1], b = trail[i], k = 1 - (now - b.t) / 420; if (k <= 0) continue;
+        ctx.strokeStyle = 'rgba(255,244,214,' + (k * 0.85) + ')'; ctx.lineWidth = 1 + k * 5; ctx.lineCap = 'round';
+        ctx.shadowColor = 'rgba(228,217,189,.9)'; ctx.shadowBlur = 12 * k;
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      }
+      ctx.shadowBlur = 0;
+      // 往左下墜落的小流星
+      for (let i = meteors.length - 1; i >= 0; i--) {
+        const m = meteors[i]; m.x += m.vx; m.y += m.vy; m.life -= 0.022;
+        if (m.life <= 0) { meteors.splice(i, 1); continue; }
+        const sp = Math.hypot(m.vx, m.vy), tx = m.x - m.vx / sp * m.len, ty = m.y - m.vy / sp * m.len;
+        const g = ctx.createLinearGradient(m.x, m.y, tx, ty);
+        g.addColorStop(0, 'rgba(255,250,235,' + m.life + ')'); g.addColorStop(1, 'rgba(228,217,189,0)');
+        ctx.strokeStyle = g; ctx.lineWidth = 2; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(tx, ty); ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,' + m.life + ')'; ctx.beginPath(); ctx.arc(m.x, m.y, 2, 0, 6.283); ctx.fill();
+      }
+      // 游標位置的流星頭
+      if (inside) {
+        const g = ctx.createRadialGradient(mx, my, 0, mx, my, 16);
+        g.addColorStop(0, 'rgba(255,255,255,.95)'); g.addColorStop(.35, 'rgba(255,240,200,.55)'); g.addColorStop(1, 'rgba(228,217,189,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(mx, my, 16, 0, 6.283); ctx.fill();
+      }
+      if (trail.length || meteors.length || inside) requestAnimationFrame(loop); else { running = false; ctx.clearRect(0, 0, W, H); }
+    }
   })();
 
   /* ================= 文字滑過閃亮星點 ================= */
