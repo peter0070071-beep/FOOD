@@ -535,6 +535,7 @@
 
       <div id="store-field" class="mb-4"><label for="f-store" class="block text-sm mb-1 text-[#c4bda9]">取餐／用餐門市 *</label><select id="f-store" name="store"></select></div>
       <div id="addr-field" class="mb-4 hidden"><label for="f-addr" class="block text-sm mb-1 text-[#c4bda9]">宅配地址 *</label><input id="f-addr" name="address" type="text" autocomplete="street-address"><p class="err text-xs text-red-400 mt-1 h-4" data-for="address"></p></div>
+      <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"><label>請勿填寫<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
       <div class="mb-6"><label for="f-note" class="block text-sm mb-1 text-[#c4bda9]">備註</label><textarea id="f-note" name="note" rows="2" placeholder="例：不加辣、餐具需求…"></textarea></div>
 
       <div class="border-t border-gold-500/25 pt-5 mb-6 text-sm">
@@ -542,9 +543,9 @@
         <div class="flex justify-between"><span>小計</span><span id="co-sub"></span></div>
         <div class="flex justify-between"><span>運費</span><span id="co-fee"></span></div>
         <div class="flex justify-between text-lg font-bold mt-2"><span>應付總額</span><span id="co-total" class="gold-text"></span></div>
-        <p class="text-xs text-[#8d8472] mt-2">※ 示範網站：不會產生實際扣款或訂單。宅配未滿 NT$ 1,500 運費 NT$ 80。</p>
+        <p id="co-note" class="text-xs text-[#8d8472] mt-2">※ 示範網站：不會產生實際扣款或訂單。宅配未滿 NT$ 1,500 運費 NT$ 80。</p>
       </div>
-      <button type="submit" class="gold-btn w-full rounded-full py-3.5 font-bold tracking-widest">送出訂單</button>
+      <button type="submit" id="co-submit" class="gold-btn w-full rounded-full py-3.5 font-bold tracking-widest disabled:opacity-60 disabled:cursor-wait">送出訂單</button>
     </form>
 
     <!-- Step 2: success -->
@@ -664,6 +665,11 @@
     { id: 'g03', name: '皇家饗宴綜合禮盒（40 入）', desc: '松露、龍蝦、紅酒牛肉三種奢華口味，送禮體面。', price: 1980, tags: ['伴手禮', '限量'], img: IMG.gift2, badge: 'Royal' }
   ];
 
+  /* ================= 訂單系統設定 =================
+   * 部署 gas/Code.gs 為「網頁應用程式」後，把網址貼在下面（https://script.google.com/macros/s/.../exec）。
+   * 留空 = 示範模式（不會送出訂單）。 */
+  const ORDER_API = '';
+
   const STORES = [
     { id: 's1', name: '旗艦店・大安', addr: '台北市大安區忠孝東路四段 100 號 1F', tel: '02-2771-0001', hours: [['週一至週五', '11:00 – 21:30'], ['週六、週日', '10:30 – 22:00']], pin: ['50%', '48%'] },
     { id: 's2', name: '信義店', addr: '台北市信義區松高路 19 號 B1', tel: '02-2723-0002', hours: [['週日至週四', '11:00 – 21:30'], ['週五、週六', '11:00 – 22:30']], pin: ['66%', '40%'] },
@@ -745,10 +751,10 @@
             '<div class="flex flex-wrap gap-1.5 mb-3">' + p.tags.map(tagHtml).join('') + spicyHtml(p.spicy) + '</div>' +
             '<h3 class="font-bold text-lg text-gold-300 mb-2">' + p.name + '</h3>' +
             '<p class="text-sm text-[#c4bda9] leading-relaxed mb-5 flex-1">' + p.desc + '</p>' +
-            '<div class="flex items-center justify-between"><span class="font-display text-2xl gold-text">' + money(p.price) + '</span>' +
+            '<div class="flex items-center justify-between"><span data-price="' + p.id + '" class="font-display text-2xl gold-text">' + money(p.price) + '</span>' +
             '<button data-add="' + p.id + '" class="gold-btn rounded-full px-5 py-2 text-sm font-bold flex items-center gap-1.5"><i data-lucide="plus" class="w-4 h-4"></i>加入購物車</button></div>' +
           '</div></article>').join('');
-      bindImg(grid); icons();
+      bindImg(grid); markSoldOut(); icons();
       grid.style.transition = 'opacity .35s'; grid.style.opacity = '1';
     }, 160);
   }
@@ -766,7 +772,7 @@
         '<div class="flex flex-wrap gap-1.5 mb-3">' + g.tags.map(tagHtml).join('') + '</div>' +
         '<h3 class="font-bold text-xl text-gold-300 mb-2">' + g.name + '</h3>' +
         '<p class="text-sm text-[#c4bda9] leading-relaxed mb-6 flex-1">' + g.desc + '</p>' +
-        '<div class="flex items-center justify-between gap-3"><span class="font-display text-3xl gold-text">' + money(g.price) + '</span>' +
+        '<div class="flex items-center justify-between gap-3"><span data-price="' + g.id + '" class="font-display text-3xl gold-text">' + money(g.price) + '</span>' +
         '<div class="flex gap-2"><button data-add="' + g.id + '" class="ghost-btn rounded-full px-4 py-2 text-sm font-bold" aria-label="加入購物車">加入購物車</button>' +
         '<button data-buy="' + g.id + '" class="gold-btn rounded-full px-4 py-2 text-sm font-bold">直接購買</button></div></div>' +
       '</div></article>').join('');
@@ -817,6 +823,14 @@
 
   /* ================= 購物車 ================= */
   let cart = []; // [{id, qty}]
+  const SOLD_OUT = new Set();
+  function markSoldOut() {
+    $$('[data-add],[data-buy]').forEach(b => {
+      const id = b.dataset.add || b.dataset.buy, so = SOLD_OUT.has(id);
+      b.disabled = so; b.classList.toggle('opacity-40', so); b.classList.toggle('cursor-not-allowed', so);
+      if (so) b.title = '目前售完'; else b.removeAttribute('title');
+    });
+  }
   const drawer = $('#cart-drawer'), overlay = $('#cart-overlay');
 
   function cartCount() { return cart.reduce((s, c) => s + c.qty, 0); }
@@ -858,6 +872,7 @@
     bindImg(box); icons();
   }
   function addToCart(id, silent) {
+    if (SOLD_OUT.has(id)) { toast('「' + findItem(id).name + '」目前售完', 'error'); return; }
     const row = cart.find(c => c.id === id);
     if (row) row.qty++; else cart.push({ id: id, qty: 1 });
     renderCart();
@@ -912,7 +927,7 @@
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(modal); });
 
   function setErr(name, msg) { const p = $('.err[data-for="' + name + '"]'); if (p) p.textContent = msg; return !msg; }
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const v = n => form.elements[n].value.trim();
     let ok = true;
@@ -924,15 +939,84 @@
     if (!ok) { toast('請修正表單欄位', 'error'); return; }
 
     const mode = currentMode();
-    const no = 'MD' + new Date().toISOString().slice(2, 10).replace(/-/g, '') + '-' + String(Math.floor(1000 + Math.random() * 9000));
-    $('#ok-no').textContent = no;
-    const total = money(cartSubtotal() + calcFee());
-    const msgs = { dinein: '我們已為您保留 ' + v('store') + ' 的座位，餐點將於入座後現點現煎。', takeout: '請於約 20 分鐘後至 ' + v('store') + ' 取餐。', delivery: '預計 1–2 小時內送達：' + v('address') + '。' };
-    $('#ok-msg').textContent = v('name') + ' 您好，訂單總額 ' + total + '。' + msgs[mode] + ' 確認信已寄至 ' + v('email') + '（示範）。';
-    form.classList.add('hidden'); success.classList.remove('hidden');
-    cart = []; renderCart(); form.reset(); icons();
-    modal.scrollTop = 0;
+    const payload = {
+      clientId: newClientId(), mode, store: mode === 'delivery' ? '' : v('store'), name: v('name'),
+      phone: v('phone').replace(/[-\s]/g, ''), email: v('email'), address: mode === 'delivery' ? v('address') : '', note: v('note'),
+      items: cart.map(c => ({ id: c.id, qty: c.qty })), website: form.elements.website.value
+    };
+    const msgs = { dinein: '我們已為您保留 ' + payload.store + ' 的座位，餐點將於入座後現點現煎。', takeout: '請於約 20 分鐘後至 ' + payload.store + ' 取餐。', delivery: '預計 1–2 小時內送達：' + payload.address + '。' };
+
+    if (!ORDER_API) {   // 示範模式
+      const no = 'MD' + new Date().toISOString().slice(2, 10).replace(/-/g, '') + '-' + String(Math.floor(1000 + Math.random() * 9000));
+      showOrderDone(no, payload.name + ' 您好，訂單總額 ' + money(cartSubtotal() + calcFee()) + '。' + msgs[mode] + ' 確認信已寄至 ' + payload.email + '（示範）。');
+      return;
+    }
+    const btn = $('#co-submit'); btn.disabled = true; btn.textContent = '訂單送出中…';
+    try {
+      const res = await sendOrder(payload);
+      if (res.ok) {
+        showOrderDone(res.orderNo, payload.name + ' 您好，訂單總額 ' + money(res.total) + (res.fee ? '（含運費 ' + money(res.fee) + '）' : '') + '。' + msgs[mode] + ' 確認信已寄至 ' + payload.email + '。');
+      } else {
+        if (res.fields) Object.entries(res.fields).forEach(([k, m]) => setErr(k, m));
+        if (res.soldOut) { res.soldOut.forEach(id => SOLD_OUT.add(id)); markSoldOut(); }
+        toast(res.error || '訂單送出失敗，請稍後再試', 'error');
+      }
+    } catch (err) {
+      // 網路中斷：暫存訂單，恢復連線後自動送出（伺服器以 clientId 避免重複建立）
+      queueOrder(payload);
+      showOrderDone('待送出', payload.name + ' 您好，目前網路不穩，訂單已暫存在此裝置，恢復連線後會自動送出，成功後將寄確認信至 ' + payload.email + '。若急需餐點請直接致電門市。');
+    } finally { btn.disabled = false; btn.textContent = '送出訂單'; }
   });
+  function showOrderDone(no, msg) {
+    $('#ok-no').textContent = no; $('#ok-msg').textContent = msg;
+    form.classList.add('hidden'); success.classList.remove('hidden');
+    cart = []; renderCart(); form.reset(); icons(); modal.scrollTop = 0;
+  }
+
+  /* ================= Google Sheet 訂單串接 ================= */
+  function newClientId() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2); }
+  async function sendOrder(payload) {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 25000);
+    try {
+      // text/plain 可避免跨網域預檢，Apps Script 才收得到
+      const r = await fetch(ORDER_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload), signal: ctl.signal, redirect: 'follow' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return await r.json();
+    } finally { clearTimeout(t); }
+  }
+  const QKEY = 'md_pending_orders';
+  const readQueue = () => { try { return JSON.parse(localStorage.getItem(QKEY) || '[]'); } catch (e) { return []; } };
+  const writeQueue = q => { try { localStorage.setItem(QKEY, JSON.stringify(q)); } catch (e) {} };
+  function queueOrder(p) { const q = readQueue(); if (!q.some(x => x.clientId === p.clientId)) q.push(p); writeQueue(q); }
+  let flushing = false;
+  async function flushQueue() {
+    if (!ORDER_API || flushing || !navigator.onLine) return;
+    const q = readQueue(); if (!q.length) return;
+    flushing = true; const left = [];
+    for (const p of q) {
+      try {
+        const res = await sendOrder(p);
+        if (res.ok) toast('暫存的訂單已送出，編號 ' + res.orderNo);
+        else toast('暫存的訂單未能送出：' + (res.error || '請致電門市'), 'error');
+      } catch (e) { left.push(p); }
+    }
+    writeQueue(left); flushing = false;
+  }
+  async function syncMenu() {   // 依 Google Sheet「菜單」同步價格與售完狀態
+    if (!ORDER_API) return;
+    try {
+      const r = await fetch(ORDER_API + '?action=menu'); const res = await r.json(); if (!res.ok) return;
+      SOLD_OUT.clear();
+      res.items.forEach(m => { const it = findItem(m.id); if (!it) return; if (m.price > 0) it.price = m.price; if (!m.active) SOLD_OUT.add(m.id); });
+      $$('[data-price]').forEach(el => { const it = findItem(el.dataset.price); if (it) el.textContent = money(it.price); });
+      const before = cart.length; cart = cart.filter(c => !SOLD_OUT.has(c.id)); if (cart.length < before) toast('部分品項已售完，已從購物車移除', 'error');
+      markSoldOut(); renderCart();
+    } catch (e) { /* 離線時沿用網頁內建菜單 */ }
+  }
+  if (ORDER_API) {
+    $('#co-note').textContent = '※ 訂單送出後會寄確認信至您的 Email。宅配未滿 NT$ 1,500 運費 NT$ 80。';
+    syncMenu(); flushQueue(); window.addEventListener('online', flushQueue);
+  }
   $('#ok-close').addEventListener('click', () => { closeModal(modal); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
   /* ================= 頁尾：電子報 / 政策 ================= */

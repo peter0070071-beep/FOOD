@@ -1,5 +1,5 @@
 /* Maison Doré PWA service worker：離線可開啟、圖片與外部資源快取 */
-const VERSION = 'md-v2';
+const VERSION = 'md-v3';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png', './icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
@@ -11,6 +11,8 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request; if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  // 訂單 API（Google Apps Script）一律直連，不快取，避免拿到舊的菜單或狀態
+  if (/(^|\.)script\.google\.com$|googleusercontent\.com$/.test(url.hostname)) return;
   // 影片分段請求不快取
   if (req.headers.has('range')) return;
   // 頁面：先連網路（取得最新版），失敗再用快取，確保離線可開啟
