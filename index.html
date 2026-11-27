@@ -64,7 +64,7 @@
   .map-grid { background-color: #2c241b; background-image: linear-gradient(rgba(184,166,124,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(184,166,124,.08) 1px, transparent 1px); background-size: 34px 34px; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
   /* ===== 促銷優惠彈窗 ===== */
-  #promo-popup { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 45; width: min(360px, calc(100vw - 2rem)); opacity: 0; transform: translateY(24px); pointer-events: none; transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
+  #promo-popup { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 45; width: min(360px, calc(100vw - 2rem)); opacity: 0; transform: translateY(24px); pointer-events: none; transition: opacity 1.8s ease, transform 1.8s cubic-bezier(.2,.8,.2,1); }
   #promo-popup.show { opacity: 1; transform: none; pointer-events: auto; }
   #promo-popup .promo-card { position: relative; padding: 2.1rem 1.75rem 1.6rem; text-align: center; background: linear-gradient(160deg, #4a2432 0%, #28211b 55%, #1d1814 100%); border: 1px solid rgba(184,166,124,.55); box-shadow: 0 24px 60px rgba(0,0,0,.65), 0 0 0 1px rgba(0,0,0,.6), inset 0 0 0 5px #28211b, inset 0 0 0 6px rgba(184,166,124,.28); }
   #promo-popup .promo-card::before { content: ''; position: absolute; top: 0; left: 50%; width: 120px; height: 1px; transform: translateX(-50%); background: linear-gradient(90deg, transparent, #e4d9bd, transparent); }
@@ -919,15 +919,16 @@
   /* ================= 促銷優惠彈窗 ================= */
   (function promo() {
     const el = document.getElementById('promo-popup'); if (!el) return;
-    const KEY = 'md_promo_closed';
-    try { if (sessionStorage.getItem(KEY)) return; } catch (e) {}
+    const GAP = 5000;            // 關閉後每 5 秒再慢慢彈出一次
+    let timer = null;
+    const showIt = () => { el.classList.add('show'); el.setAttribute('aria-hidden', 'false'); };
     const hide = () => {
       el.classList.remove('show'); el.setAttribute('aria-hidden', 'true');
-      try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+      clearTimeout(timer); timer = setTimeout(showIt, GAP);
     };
     el.addEventListener('click', e => { if (e.target.closest('[data-promo-close]')) hide(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && el.classList.contains('show')) hide(); });
-    setTimeout(() => { el.classList.add('show'); el.setAttribute('aria-hidden', 'false'); }, 3500);
+    timer = setTimeout(showIt, GAP);
   })();
 
   /* ================= 滑動視差錯視 ================= */
