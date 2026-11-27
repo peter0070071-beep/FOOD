@@ -118,6 +118,32 @@
   #promo-tab:hover { box-shadow: 0 12px 30px rgba(0,0,0,.55), 0 0 18px rgba(228,217,189,.35), 0 0 0 4px rgba(29,24,20,.6); }
   #promo-tab small { margin-left: .5rem; padding: .05rem .5rem; border-radius: 999px; background: #cdbd94; color: #17120d; font-size: .72rem; }
   #promo-tab:focus-visible { outline: 2px solid #e4d9bd; outline-offset: 4px; }
+  /* ===== 阿爾卑斯山互動數據 ===== */
+  .alps { position: relative; overflow: hidden; border-radius: 4px; }
+  .alps-svg { display: block; width: 100%; height: auto; }
+  .alp-far { fill: rgba(228,217,189,.05); stroke: #b8a67c; stroke-opacity: .25; stroke-width: 1; }
+  .alp-mid { fill: rgba(228,217,189,.08); stroke: #b8a67c; stroke-opacity: .4; stroke-width: 1.2; }
+  .alp-layer { transition: transform .35s ease-out; }
+  .alp-fill { fill: rgba(205,189,148,.06); transition: fill .4s; }
+  .alp-line { fill: none; stroke: #e4d9bd; stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-width .3s, filter .3s, opacity .3s; }
+  .alp-snow { fill: rgba(255,250,235,.16); stroke: #fffaf0; stroke-opacity: .7; stroke-width: 1.2; stroke-linejoin: round; opacity: 0; transition: opacity .8s ease 1.4s, fill .3s; }
+  .alp-hatch { fill: none; stroke: #b8a67c; stroke-opacity: .35; stroke-width: 1; stroke-dasharray: 4 6; opacity: 0; transition: opacity .8s ease 1.6s; }
+  .alps.in .alp-line { animation: alpDraw 2.2s ease-out forwards; }
+  .alps.in .alp-snow, .alps.in .alp-hatch { opacity: 1; }
+  @keyframes alpDraw { to { stroke-dashoffset: 0; } }
+  .alps[data-active] .alp-peak-g { opacity: .45; transition: opacity .3s; }
+  .alps[data-active="0"] .alp-peak-g[data-i="0"], .alps[data-active="1"] .alp-peak-g[data-i="1"], .alps[data-active="2"] .alp-peak-g[data-i="2"] { opacity: 1; }
+  .alps[data-active="0"] [data-i="0"] .alp-fill, .alps[data-active="1"] [data-i="1"] .alp-fill, .alps[data-active="2"] [data-i="2"] .alp-fill { fill: rgba(228,200,120,.26); }
+  .alps[data-active="0"] [data-i="0"] .alp-line, .alps[data-active="1"] [data-i="1"] .alp-line, .alps[data-active="2"] [data-i="2"] .alp-line { stroke-width: 3.6; filter: drop-shadow(0 0 7px rgba(255,236,170,.85)); }
+  .alp-peak-g { transition: opacity .3s; }
+  .alp-btn { position: absolute; transform: translateX(-50%); text-align: center; padding: .35rem .8rem; border-radius: 10px; background: rgba(29,24,20,.55); border: 1px solid rgba(184,166,124,.35); backdrop-filter: blur(2px); color: #e4d9bd; transition: transform .3s cubic-bezier(.2,.8,.2,1), background .3s, border-color .3s, box-shadow .3s; cursor: pointer; }
+  .alp-btn .alp-num { display: block; font-family: 'Cinzel', serif; font-size: clamp(1.25rem, 4.2vw, 2.6rem); line-height: 1.1; text-shadow: 0 0 14px rgba(228,190,100,.35); }
+  .alp-btn .alp-lab { display: block; margin-top: .15rem; font-size: clamp(.62rem, 1.6vw, .85rem); letter-spacing: .15em; color: #c4bda9; white-space: nowrap; }
+  .alps[data-active="0"] .alp-btn[data-i="0"], .alps[data-active="1"] .alp-btn[data-i="1"], .alps[data-active="2"] .alp-btn[data-i="2"], .alp-btn:focus-visible { transform: translateX(-50%) translateY(-6px) scale(1.12); background: rgba(58,36,40,.85); border-color: #e4d9bd; box-shadow: 0 0 22px rgba(228,200,120,.45); outline: none; }
+  .alps-hint { position: absolute; left: 0; right: 0; bottom: .55rem; text-align: center; color: #c4bda9; font-size: clamp(.7rem, 1.6vw, .9rem); letter-spacing: .1em; pointer-events: none; }
+  .alp-stars circle { animation: twinkle 3.2s ease-in-out infinite; }
+  .alp-stars circle:nth-child(2n) { animation-delay: 1.1s; } .alp-stars circle:nth-child(3n) { animation-delay: 2s; }
+  @keyframes twinkle { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
   @keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
   @keyframes toastIn { from { opacity: 0; transform: translateY(-14px) } to { opacity: 1; transform: none } }
 </style>
@@ -274,11 +300,60 @@
     </div>
   </div>
 
-  <!-- Stats -->
-  <div class="max-w-6xl mx-auto mt-24 grid grid-cols-1 sm:grid-cols-3 gap-6 reveal">
-    <div class="frame text-center py-10 bg-ink-800/60"><div class="font-display text-5xl gold-text"><span data-count="10000">0</span>+</div><p class="mt-3 tracking-widest text-sm text-[#c4bda9]">每日賣出（顆）</p></div>
-    <div class="frame text-center py-10 bg-ink-800/60"><div class="font-display text-5xl gold-text"><span data-count="100">0</span>%</div><p class="mt-3 tracking-widest text-sm text-[#c4bda9]">現點現煎</p></div>
-    <div class="frame text-center py-10 bg-ink-800/60"><div class="font-display text-5xl gold-text"><span data-count="200">0</span>年</div><p class="mt-3 tracking-widest text-sm text-[#c4bda9]">老店技術傳承</p></div>
+  <!-- Stats：阿爾卑斯山互動數據 -->
+  <div class="max-w-6xl mx-auto mt-24 reveal">
+    <p class="text-center font-display text-gold-500 tracking-[.4em] text-xs mb-3">LES ALPES · EN CHIFFRES</p>
+    <div id="alps" class="alps frame bg-ink-800/60" aria-label="阿爾卑斯山互動數據圖">
+      <svg viewBox="0 0 1200 520" preserveAspectRatio="xMidYMax meet" class="alps-svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="alpSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2330"/><stop offset=".7" stop-color="#4b3326"/><stop offset="1" stop-color="#28211b"/></linearGradient>
+          <linearGradient id="alpMist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e4d9bd" stop-opacity="0"/><stop offset="1" stop-color="#e4d9bd" stop-opacity=".22"/></linearGradient>
+          <radialGradient id="alpSun"><stop offset="0" stop-color="#fff3cf" stop-opacity=".9"/><stop offset="1" stop-color="#fff3cf" stop-opacity="0"/></radialGradient>
+        </defs>
+        <rect width="1200" height="520" fill="url(#alpSky)"/>
+        <g class="alp-stars" fill="#fff3cf"><circle cx="90" cy="60" r="1.6"/><circle cx="300" cy="110" r="1.3"/><circle cx="470" cy="50" r="1.6"/><circle cx="760" cy="80" r="1.3"/><circle cx="905" cy="45" r="1.6"/><circle cx="1150" cy="150" r="1.3"/><circle cx="660" cy="30" r="1.2"/></g>
+        <g class="alp-sun"><circle cx="1090" cy="85" r="70" fill="url(#alpSun)"/><circle cx="1090" cy="85" r="24" fill="none" stroke="#e4d9bd" stroke-width="1.5"/></g>
+        <g class="alp-layer" data-shift="-14"><path class="alp-far" d="M0 470 L90 380 L160 410 L260 330 L350 400 L450 320 L540 395 L640 345 L740 410 L850 330 L950 400 L1050 340 L1200 430 V520 H0Z"/></g>
+        <g class="alp-layer" data-shift="10"><path class="alp-mid" d="M0 480 L110 400 L200 430 L320 360 L430 430 L560 380 L690 440 L820 375 L940 435 L1060 385 L1200 450 V520 H0Z"/></g>
+        <g class="alp-layer" data-shift="4">
+      <g class="alp-peak-g" data-i="0">
+        <path class="alp-fill" d="M20 470 L120 330 L170 285 L215 190 L250 245 L275 235 L330 330 L420 470 Z"/>
+        <path class="alp-line" pathLength="1" d="M20 470 L120 330 L170 285 L215 190 L250 245 L275 235 L330 330 L420 470"/>
+        <path class="alp-snow" d="M215 190 L190 252 L203 246 L214 264 L228 244 L241 258 L252 246 Z"/>
+        <path class="alp-hatch" d="M215 190 L205 330 M215 190 L245 340 M215 190 L160 380 M170 285 L130 410 M275 235 L300 380"/>
+      </g>
+      <g class="alp-peak-g" data-i="1">
+        <path class="alp-fill" d="M370 470 L470 335 L540 235 L600 100 L640 172 L665 152 L740 262 L830 345 L900 470 Z"/>
+        <path class="alp-line" pathLength="1" d="M370 470 L470 335 L540 235 L600 100 L640 172 L665 152 L740 262 L830 345 L900 470"/>
+        <path class="alp-snow" d="M600 100 L568 190 L584 182 L598 206 L616 180 L630 198 L642 176 L650 186 Z"/>
+        <path class="alp-hatch" d="M600 100 L588 330 M600 100 L640 350 M600 100 L540 380 M540 235 L500 400 M665 152 L700 360 M740 262 L770 400"/>
+      </g>
+      <g class="alp-peak-g" data-i="2">
+        <path class="alp-fill" d="M800 470 L900 342 L970 252 L1010 175 L1045 228 L1075 208 L1130 312 L1190 470 Z"/>
+        <path class="alp-line" pathLength="1" d="M800 470 L900 342 L970 252 L1010 175 L1045 228 L1075 208 L1130 312 L1190 470"/>
+        <path class="alp-snow" d="M1010 175 L986 240 L999 233 L1010 252 L1024 230 L1037 244 L1046 230 Z"/>
+        <path class="alp-hatch" d="M1010 175 L1000 330 M1010 175 L1040 345 M1010 175 L960 380 M1075 208 L1100 380 M970 252 L930 400"/>
+      </g>
+        </g>
+        <rect y="440" width="1200" height="80" fill="url(#alpMist)"/>
+        <path d="M0 470 H1200" stroke="#b8a67c" stroke-opacity=".5"/>
+        <circle id="alp-hiker" r="5" cx="-20" cy="-20" fill="#fffaf0"/>
+        <circle id="alp-hiker-glow" r="14" cx="-20" cy="-20" fill="url(#alpSun)"/>
+      </svg>
+    <button type="button" class="alp-btn" data-i="0" style="left:18%;top:calc(36.5% - 4.2rem)" aria-label="每日賣出（顆）：10,000+">
+      <span class="alp-num"><span data-count="10000">0</span>+</span>
+      <span class="alp-lab">每日賣出（顆）</span>
+    </button>
+    <button type="button" class="alp-btn" data-i="1" style="left:50%;top:calc(19.2% - 4.2rem)" aria-label="現點現煎：100%">
+      <span class="alp-num"><span data-count="100">0</span>%</span>
+      <span class="alp-lab">現點現煎</span>
+    </button>
+    <button type="button" class="alp-btn" data-i="2" style="left:82%;top:calc(33.7% - 4.2rem)" aria-label="老店技術傳承：200年">
+      <span class="alp-num"><span data-count="200">0</span>年</span>
+      <span class="alp-lab">老店技術傳承</span>
+    </button>
+      <p class="alps-hint font-serif italic">滑過山峰看數據・點擊山峰，讓光點登頂</p>
+    </div>
   </div>
 </section>
 
@@ -964,7 +1039,7 @@
         if (content) { content.style.translate = '0 ' + (y * 0.18) + 'px'; content.style.opacity = Math.max(0, 1 - y / (vh * 0.75)); }
       }
       imgs.forEach(im => { const o = offset(im.parentElement); if (Math.abs(o.d) < vh) { const lim = o.r.height * 0.09; const t = Math.max(-lim, Math.min(lim, o.d * -parseFloat(im.dataset.parallax))); im.style.transform = 'scale(1.2) translate3d(0,' + t + 'px,0)'; } });
-      depth.forEach(el => { const o = offset(el); if (Math.abs(o.d) < vh) el.style.translate = '0 ' + (o.d * parseFloat(el.dataset.depth)) + 'px'; });
+      depth.forEach(el => { const o = offset(el); if (Math.abs(o.d) < vh) el.style.translate = '0 ' + (o.d * parseFloat(el.dataset.shift)) + 'px'; });
       damask.forEach(el => { const o = offset(el); if (Math.abs(o.d) < vh * 2) el.style.setProperty('--py', (o.d * -0.12) + 'px'); });
     }
     addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }, { passive: true });
@@ -1019,6 +1094,44 @@
       }
       if (trail.length || meteors.length || inside) requestAnimationFrame(loop); else { running = false; ctx.clearRect(0, 0, W, H); }
     }
+  })();
+
+  /* ================= 阿爾卑斯山互動數據 ================= */
+  (function alps() {
+    const box = document.getElementById('alps'); if (!box) return;
+    const btns = Array.from(box.querySelectorAll('.alp-btn')), groups = Array.from(box.querySelectorAll('.alp-peak-g'));
+    const layers = Array.from(box.querySelectorAll('.alp-layer'));
+    const hiker = document.getElementById('alp-hiker'), glow = document.getElementById('alp-hiker-glow');
+    let walking = false;
+    const act = i => { if (i == null) box.removeAttribute('data-active'); else box.setAttribute('data-active', i); };
+    btns.forEach(b => {
+      b.addEventListener('mouseenter', () => act(b.dataset.i)); b.addEventListener('mouseleave', () => act(null));
+      b.addEventListener('focus', () => act(b.dataset.i)); b.addEventListener('blur', () => act(null));
+      b.addEventListener('click', () => { climb(+b.dataset.i); const n = b.querySelector('[data-count]'); if (n) runCount(n); });
+    });
+    // 滑鼠移到山形上也會高亮；位移產生多層視差
+    box.addEventListener('mousemove', e => {
+      const r = box.getBoundingClientRect(), mx = (e.clientX - r.left) / r.width - .5;
+      layers.forEach(l => l.style.transform = 'translate(' + (mx * -parseFloat(l.dataset.shift) * 2) + 'px,0)');
+      const x = (e.clientX - r.left) / r.width * 1200;
+      if (!e.target.closest('.alp-btn')) act(x < 400 ? 0 : x < 800 ? 1 : 2);
+    });
+    box.addEventListener('mouseleave', () => { act(null); layers.forEach(l => l.style.transform = ''); });
+    // 光點沿山脊登頂
+    function climb(i) {
+      if (walking) return; const line = groups[i].querySelector('.alp-line'); walking = true;
+      const len = line.getTotalLength(), t0 = performance.now(), dur = 1800;
+      (function step(now) {
+        const p = Math.min(1, (now - t0) / dur), pt = line.getPointAtLength(len * p);
+        hiker.setAttribute('cx', pt.x); hiker.setAttribute('cy', pt.y); glow.setAttribute('cx', pt.x); glow.setAttribute('cy', pt.y);
+        if (p < 1) requestAnimationFrame(step); else { setTimeout(() => { hiker.setAttribute('cx', -20); glow.setAttribute('cx', -20); walking = false; }, 500); }
+      })(t0);
+    }
+    // 進入畫面時山脊以金線描繪
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { box.classList.add('in'); io.disconnect(); } }), { threshold: .3 });
+      io.observe(box);
+    } else box.classList.add('in');
   })();
 
   /* ================= 文字逐字動態 + 照片視窗 ================= */
