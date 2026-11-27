@@ -63,6 +63,15 @@
   input:focus, select:focus, textarea:focus { border-color: #b8a67c; box-shadow: 0 0 0 2px rgba(184,166,124,.25); }
   .map-grid { background-color: #1b1610; background-image: linear-gradient(rgba(184,166,124,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(184,166,124,.08) 1px, transparent 1px); background-size: 34px 34px; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
+  /* ===== 促銷優惠彈窗 ===== */
+  #promo-popup { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 45; width: min(360px, calc(100vw - 2rem)); opacity: 0; transform: translateY(24px); pointer-events: none; transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
+  #promo-popup.show { opacity: 1; transform: none; pointer-events: auto; }
+  #promo-popup .promo-card { position: relative; padding: 2.1rem 1.75rem 1.6rem; text-align: center; background: linear-gradient(160deg, #26101a 0%, #151311 55%, #0c0b0a 100%); border: 1px solid rgba(184,166,124,.55); box-shadow: 0 24px 60px rgba(0,0,0,.65), 0 0 0 1px rgba(0,0,0,.6), inset 0 0 0 5px #151311, inset 0 0 0 6px rgba(184,166,124,.28); }
+  #promo-popup .promo-card::before { content: ''; position: absolute; top: 0; left: 50%; width: 120px; height: 1px; transform: translateX(-50%); background: linear-gradient(90deg, transparent, #e4d9bd, transparent); }
+  #promo-popup .promo-close { position: absolute; top: .9rem; right: .9rem; width: 28px; height: 28px; display: grid; place-items: center; color: #b8a67c; border: 1px solid transparent; border-radius: 50%; transition: color .2s, border-color .2s; }
+  #promo-popup .promo-close:hover { color: #e4d9bd; border-color: rgba(184,166,124,.5); }
+  #promo-popup .promo-percent { font-family: 'Cinzel', serif; font-size: 3.4rem; line-height: 1; color: #e4d9bd; text-shadow: 0 0 24px rgba(205,189,148,.25); }
+  #promo-popup .promo-percent small { font-size: 1.1rem; letter-spacing: .15em; margin-left: .2rem; }
   @keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
   @keyframes toastIn { from { opacity: 0; transform: translateY(-14px) } to { opacity: 1; transform: none } }
 </style>
@@ -361,6 +370,21 @@
 </div>
 
 <!-- Toast container -->
+<!-- ===================== 促銷優惠彈窗（右下角） ===================== -->
+<aside id="promo-popup" role="dialog" aria-label="限時優惠" aria-hidden="true">
+  <div class="promo-card">
+    <button type="button" class="promo-close" data-promo-close aria-label="關閉優惠視窗"><i data-lucide="x" class="w-4 h-4"></i></button>
+    <p class="font-display text-[11px] tracking-[.35em] text-gold-500">LIMITED OFFER</p>
+    <div class="divider my-3"><i data-lucide="sparkles" class="w-4 h-4"></i></div>
+    <h2 class="font-tc text-lg font-bold gold-text tracking-widest">鑄金禮遇・首購優惠</h2>
+    <div class="promo-percent my-3">9<small>折</small></div>
+    <p class="font-serif italic text-base text-gold-300/90">An exclusive welcome from our maison.</p>
+    <p class="mt-3 text-xs leading-relaxed text-[#a8a190]">即日起至 12 月 31 日，線上首次點餐享全單 9 折，<br>冷凍禮盒加贈精緻提袋。</p>
+    <a href="#menu" data-promo-close class="gold-btn mt-5 inline-block w-full py-3 text-sm font-bold">立即品味</a>
+    <button type="button" data-promo-close class="mt-3 text-xs tracking-widest text-[#8d8674] hover:text-gold-300 transition-colors">稍後再說</button>
+  </div>
+</aside>
+
 <div id="toast-wrap" class="fixed top-24 right-4 left-4 sm:left-auto sm:w-80 z-[70] grid gap-2 pointer-events-none" aria-live="polite"></div>
 
 <script>
@@ -738,6 +762,20 @@
     }, { threshold: 0.15 });
     $$('.reveal').forEach(r => io.observe(r));
   }
+
+  /* ================= 促銷優惠彈窗 ================= */
+  (function promo() {
+    const el = document.getElementById('promo-popup'); if (!el) return;
+    const KEY = 'md_promo_closed';
+    try { if (sessionStorage.getItem(KEY)) return; } catch (e) {}
+    const hide = () => {
+      el.classList.remove('show'); el.setAttribute('aria-hidden', 'true');
+      try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+    };
+    el.addEventListener('click', e => { if (e.target.closest('[data-promo-close]')) hide(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && el.classList.contains('show')) hide(); });
+    setTimeout(() => { el.classList.add('show'); el.setAttribute('aria-hidden', 'false'); }, 3500);
+  })();
 
   /* ================= 初始化 ================= */
   renderTabs(); renderMenu(); renderStores(); renderCart();
