@@ -141,7 +141,7 @@
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden" aria-label="主視覺">
   <!-- 影片輪播：每張 slide 可在 data-video 填入 mp4 網址（歐洲餐廳內裝、古堡外觀），未填或載入失敗時顯示內建插畫 -->
   <div id="hero-carousel" class="absolute inset-0" aria-roledescription="carousel" aria-label="Maison Doré 場景輪播">
-    <div class="hero-slide active" data-video="videos/castle.mp4" data-poster="" data-label-en="LE CHÂTEAU" data-label-zh="古堡外觀">
+    <div class="hero-slide active" data-video="videos/castle.mp4,https://videos.pexels.com/video-files/14401360/14401360-hd_1920_1080_24fps.mp4,https://videos.pexels.com/video-files/14401360/14401360-hd_1920_1080_25fps.mp4,https://videos.pexels.com/video-files/14401360/14401360-hd_1920_1080_30fps.mp4,https://videos.pexels.com/video-files/14401360/14401360-uhd_2560_1440_25fps.mp4,https://videos.pexels.com/video-files/14401360/14401360-sd_960_540_25fps.mp4" data-poster="" data-label-en="LE CHÂTEAU" data-label-zh="古堡空拍・霍亨索倫">
       <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" class="hero-art" aria-hidden="true">
         <defs><linearGradient id="skyA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b0a1a"/><stop offset=".55" stop-color="#3a1520"/><stop offset="1" stop-color="#b8844a"/></linearGradient>
         <radialGradient id="moonA"><stop offset="0" stop-color="#fff6dc"/><stop offset="1" stop-color="#fff6dc" stop-opacity="0"/></radialGradient></defs>
@@ -162,7 +162,7 @@
         <path d="M0 700 Q400 660 800 690 T1600 680 V900 H0Z" fill="#0d0b0a"/>
       </svg>
     </div>
-    <div class="hero-slide" data-video="videos/salon.mp4" data-poster="" data-label-en="LE SALON" data-label-zh="餐廳內裝">
+    <div class="hero-slide" data-video="videos/salon.mp4,https://videos.pexels.com/video-files/29549593/29549593-hd_1920_1080_24fps.mp4,https://videos.pexels.com/video-files/29549593/29549593-hd_1920_1080_25fps.mp4,https://videos.pexels.com/video-files/29549593/29549593-hd_1920_1080_30fps.mp4,https://videos.pexels.com/video-files/29549593/29549593-uhd_2560_1440_25fps.mp4,https://videos.pexels.com/video-files/29549593/29549593-sd_960_540_25fps.mp4" data-poster="" data-label-en="LA FORTERESSE" data-label-zh="古堡空拍・捷克">
       <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" class="hero-art" aria-hidden="true">
         <defs><linearGradient id="wallB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26101a"/><stop offset="1" stop-color="#0c0b0a"/></linearGradient>
         <radialGradient id="glowB"><stop offset="0" stop-color="#f3c777" stop-opacity=".75"/><stop offset="1" stop-color="#f3c777" stop-opacity="0"/></radialGradient></defs>
@@ -181,7 +181,7 @@
         <g fill="#fff0b8"><circle cx="368" cy="698" r="7"/><circle cx="798" cy="718" r="7"/><circle cx="1228" cy="698" r="7"/></g>
       </svg>
     </div>
-    <div class="hero-slide" data-video="videos/hall.mp4" data-poster="" data-label-en="LA GALERIE" data-label-zh="金色長廊">
+    <div class="hero-slide" data-video="videos/hall.mp4,https://videos.pexels.com/video-files/5537875/5537875-hd_1920_1080_24fps.mp4,https://videos.pexels.com/video-files/5537875/5537875-hd_1920_1080_25fps.mp4,https://videos.pexels.com/video-files/5537875/5537875-hd_1920_1080_30fps.mp4,https://videos.pexels.com/video-files/5537875/5537875-uhd_2560_1440_25fps.mp4,https://videos.pexels.com/video-files/5537875/5537875-sd_960_540_25fps.mp4" data-poster="" data-label-en="LE DOMAINE" data-label-zh="古堡空拍・莊園">
       <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" class="hero-art" aria-hidden="true">
         <defs><linearGradient id="floorC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1610"/><stop offset="1" stop-color="#3a1520"/></linearGradient>
         <radialGradient id="glowC"><stop offset="0" stop-color="#f3c777" stop-opacity=".6"/><stop offset="1" stop-color="#f3c777" stop-opacity="0"/></radialGradient></defs>
@@ -842,11 +842,12 @@
     let cur = 0, timer = null;
     // 有提供影片網址才建立 <video>；載入失敗就移除，保留插畫
     slides.forEach(sl => {
-      const src = sl.dataset.video; if (!src) return;
+      const list = (sl.dataset.video || '').split(',').filter(Boolean); if (!list.length) return;
+      let src = list.shift();
       const v = document.createElement('video');
       v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'metadata';
       if (sl.dataset.poster) v.poster = sl.dataset.poster;
-      v.src = src; v.addEventListener('error', () => v.remove());
+      v.src = src; v.addEventListener('error', () => { if (list.length) { v.src = list.shift(); v.load(); } else v.remove(); });
       sl.appendChild(v);
     });
     slides.forEach((sl, i) => {
