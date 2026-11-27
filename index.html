@@ -99,12 +99,19 @@
   @keyframes sparkleSweep { from { background-position: 130% 0; } to { background-position: -30% 0; } }
   .md-star { position: fixed; z-index: 80; pointer-events: none; width: 14px; height: 14px; margin: -7px 0 0 -7px; background: radial-gradient(circle, #fffbea 0 18%, rgba(255,240,190,.9) 30%, transparent 70%); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); animation: starPop .9s ease-out forwards; }
   @keyframes starPop { 0% { opacity: 0; transform: scale(.2) rotate(0deg); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(-16px) scale(1.5) rotate(110deg); } }
+  /* ===== 滑動視差錯視 ===== */
+  #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 90; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, #756844, #e4d9bd, #fffaf0); box-shadow: 0 0 10px rgba(228,217,189,.6); pointer-events: none; }
+  #hero-carousel, #hero-content { will-change: translate, opacity; }
+  .damask { background-position: 0 var(--py, 0px); }
+  [data-parallax] { will-change: transform; }
+  [data-depth] { will-change: translate; }
   @keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
   @keyframes toastIn { from { opacity: 0; transform: translateY(-14px) } to { opacity: 1; transform: none } }
 </style>
 </head>
 
 <body class="antialiased">
+<div id="scroll-progress" aria-hidden="true"></div>
 
 <!-- ===================== Header / Navigation ===================== -->
 <header id="top" class="fixed top-0 inset-x-0 z-40 transition-all duration-300">
@@ -219,7 +226,7 @@
   <div class="absolute inset-0 bg-gradient-to-b from-ink-900/90 via-ink-900/65 to-ink-900"></div>
   <div class="absolute inset-0 damask opacity-60"></div>
   <div id="hero-dots" class="absolute bottom-9 right-6 sm:right-10 z-10 flex gap-3"></div>
-  <div class="relative z-10 text-center px-6 pt-24 max-w-4xl">
+  <div id="hero-content" class="relative z-10 text-center px-6 pt-24 max-w-4xl">
     <p class="font-display text-gold-400 tracking-[.5em] text-xs sm:text-sm mb-6">ESTABLISHED IN PARIS · TAIPEI</p>
     <h1 data-sparkle class="sparkle-text font-display font-bold text-4xl sm:text-6xl lg:text-7xl leading-tight">Un Banquete Europeo,<br class="sm:hidden"> Directo a Taipéi</h1>
     <p data-sparkle class="sparkle-text shimmer-text font-tc font-bold text-sm sm:text-lg tracking-[.3em] mt-5">在台北也能吃到的歐洲直送饗宴</p>
@@ -238,7 +245,7 @@
   <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-14 items-center">
     <div class="reveal order-2 lg:order-1">
       <p class="font-display text-gold-500 tracking-[.4em] text-xs mb-3">NOTRE HISTOIRE</p>
-      <h2 class="font-tc text-3xl sm:text-4xl font-bold gold-text mb-6">品牌故事</h2>
+      <h2 data-depth="-0.07" class="font-tc text-3xl sm:text-4xl font-bold gold-text mb-6">品牌故事</h2>
       <p class="leading-loose text-[#cfc8b8] mb-6">Maison Doré 的靈感，來自十九世紀巴黎的宮廷廚房。我們將東方鍋貼的「底酥、面嫩、汁多」，以歐式的精緻工序重新詮釋——每一顆都是一件可以食用的金色工藝品。</p>
       <ul class="grid gap-4 mb-8">
         <li class="flex gap-4"><span class="w-10 h-10 shrink-0 rounded-full frame grid place-items-center"><i data-lucide="wheat" class="w-5 h-5 text-gold-500"></i></span><div><h3 class="font-bold text-gold-300">法國在地豬肉</h3><p class="text-sm text-[#a8a190] leading-relaxed">嚴選法國放牧豬肉，肥瘦比例 3:7，肉質鮮甜、不腥不膩。</p></div></li>
@@ -247,7 +254,7 @@
       </ul>
     </div>
     <div class="reveal order-1 lg:order-2 relative">
-      <div class="frame p-3"><img data-img src="https://i.postimg.cc/j2YmMLV1/Chat-GPT-Image-2026nian8yue9ri-xia-wu06-20-57.png" alt="燈光溫暖的優雅餐廳" class="w-full aspect-[4/5] object-cover"></div>
+      <div class="frame p-3"><div class="overflow-hidden"><img data-img data-parallax="0.12" src="https://i.postimg.cc/j2YmMLV1/Chat-GPT-Image-2026nian8yue9ri-xia-wu06-20-57.png" alt="燈光溫暖的優雅餐廳" class="w-full aspect-[4/5] object-cover" style="transform: scale(1.2)"></div></div>
       <div class="absolute -bottom-6 -left-4 sm:-left-8 gold-btn rounded px-6 py-4 font-display tracking-widest text-sm">SINCE 1824</div>
     </div>
   </div>
@@ -267,7 +274,7 @@
   <div class="max-w-6xl mx-auto">
     <div class="text-center mb-12 reveal">
       <p class="font-display text-gold-500 tracking-[.4em] text-xs mb-3">LA CARTE</p>
-      <h2 class="font-tc text-3xl sm:text-4xl font-bold gold-text">熱門餐點・線上點餐</h2>
+      <h2 data-depth="-0.07" class="font-tc text-3xl sm:text-4xl font-bold gold-text">熱門餐點・線上點餐</h2>
       <div class="divider mt-5"><i data-lucide="utensils-crossed" class="w-5 h-5"></i></div>
     </div>
 
@@ -284,7 +291,7 @@
   <div class="max-w-6xl mx-auto">
     <div class="text-center mb-14 reveal">
       <p class="font-display text-gold-500 tracking-[.4em] text-xs mb-3">COFFRETS CADEAUX</p>
-      <h2 class="font-tc text-3xl sm:text-4xl font-bold gold-text">冷凍禮盒專區</h2>
+      <h2 data-depth="-0.07" class="font-tc text-3xl sm:text-4xl font-bold gold-text">冷凍禮盒專區</h2>
       <p class="mt-4 text-[#a8a190]">節慶饋贈、家庭聚餐，把巴黎的金黃帶回家。</p>
     </div>
     <div id="gift-grid" class="grid lg:grid-cols-3 gap-8"></div>
@@ -302,7 +309,7 @@
   <div class="max-w-6xl mx-auto">
     <div class="text-center mb-12 reveal">
       <p class="font-display text-gold-500 tracking-[.4em] text-xs mb-3">NOS MAISONS</p>
-      <h2 class="font-tc text-3xl sm:text-4xl font-bold gold-text">門市據點與營業資訊</h2>
+      <h2 data-depth="-0.07" class="font-tc text-3xl sm:text-4xl font-bold gold-text">門市據點與營業資訊</h2>
     </div>
     <div class="grid lg:grid-cols-5 gap-8">
       <div id="store-list" class="lg:col-span-2 grid gap-4 content-start"></div>
@@ -335,7 +342,7 @@
   <div class="max-w-3xl mx-auto">
     <div class="text-center mb-12 reveal">
       <p class="font-display text-gold-500 tracking-[.4em] text-xs mb-3">QUESTIONS</p>
-      <h2 class="font-tc text-3xl sm:text-4xl font-bold gold-text">常見問題</h2>
+      <h2 data-depth="-0.07" class="font-tc text-3xl sm:text-4xl font-bold gold-text">常見問題</h2>
     </div>
     <div id="faq-list" class="grid gap-3"></div>
   </div>
@@ -903,6 +910,32 @@
     el.addEventListener('click', e => { if (e.target.closest('[data-promo-close]')) hide(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && el.classList.contains('show')) hide(); });
     setTimeout(() => { el.classList.add('show'); el.setAttribute('aria-hidden', 'false'); }, 3500);
+  })();
+
+  /* ================= 滑動視差錯視 ================= */
+  (function parallax() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const bar = document.getElementById('scroll-progress');
+    const carousel = document.getElementById('hero-carousel'), content = document.getElementById('hero-content');
+    const imgs = Array.from(document.querySelectorAll('[data-parallax]'));
+    const depth = Array.from(document.querySelectorAll('[data-depth]'));
+    const damask = Array.from(document.querySelectorAll('.damask'));
+    let ticking = false;
+    function offset(el) { const r = el.getBoundingClientRect(); return { r, d: (r.top + r.height / 2) - innerHeight / 2 }; }
+    function frame() {
+      ticking = false;
+      const y = scrollY, vh = innerHeight, max = document.documentElement.scrollHeight - vh;
+      if (bar) bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(y / max, 1) : 0) + ')';
+      if (y < vh * 1.2) {
+        if (carousel) carousel.style.translate = '0 ' + (y * 0.4) + 'px';
+        if (content) { content.style.translate = '0 ' + (y * 0.18) + 'px'; content.style.opacity = Math.max(0, 1 - y / (vh * 0.75)); }
+      }
+      imgs.forEach(im => { const o = offset(im.parentElement); if (Math.abs(o.d) < vh) { const lim = o.r.height * 0.09; const t = Math.max(-lim, Math.min(lim, o.d * -parseFloat(im.dataset.parallax))); im.style.transform = 'scale(1.2) translate3d(0,' + t + 'px,0)'; } });
+      depth.forEach(el => { const o = offset(el); if (Math.abs(o.d) < vh) el.style.translate = '0 ' + (o.d * parseFloat(el.dataset.depth)) + 'px'; });
+      damask.forEach(el => { const o = offset(el); if (Math.abs(o.d) < vh * 2) el.style.setProperty('--py', (o.d * -0.12) + 'px'); });
+    }
+    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }, { passive: true });
+    addEventListener('resize', frame); frame();
   })();
 
   /* ================= 文字滑過閃亮星點 ================= */
