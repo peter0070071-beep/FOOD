@@ -113,6 +113,11 @@
   [data-glow]:hover .wave-char { animation: waveHop 1.1s ease-in-out infinite; animation-delay: calc(var(--i) * 55ms); }
   @keyframes charGlow { 0%, 70%, 100% { color: #b8a67c; text-shadow: none; } 82% { color: #fffaf0; text-shadow: 0 0 10px rgba(255,236,170,.9), 0 0 22px rgba(228,190,100,.5); } }
   #photo-modal { background: rgba(10,8,6,.82); backdrop-filter: blur(3px); }
+  #promo-tab { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 45; display: inline-flex; align-items: center; gap: .6rem; padding: .7rem 1.1rem; color: #e4d9bd; font-size: .85rem; font-weight: 700; letter-spacing: .15em; background: linear-gradient(160deg, #4a2432, #28211b); border: 1px solid rgba(184,166,124,.6); border-radius: 999px; box-shadow: 0 10px 28px rgba(0,0,0,.5), 0 0 0 4px rgba(29,24,20,.6); opacity: 0; transform: translateY(14px); pointer-events: none; transition: opacity .6s ease, transform .6s ease, box-shadow .25s; }
+  #promo-tab.show { opacity: 1; transform: none; pointer-events: auto; }
+  #promo-tab:hover { box-shadow: 0 12px 30px rgba(0,0,0,.55), 0 0 18px rgba(228,217,189,.35), 0 0 0 4px rgba(29,24,20,.6); }
+  #promo-tab small { margin-left: .5rem; padding: .05rem .5rem; border-radius: 999px; background: #cdbd94; color: #17120d; font-size: .72rem; }
+  #promo-tab:focus-visible { outline: 2px solid #e4d9bd; outline-offset: 4px; }
   @keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
   @keyframes toastIn { from { opacity: 0; transform: translateY(-14px) } to { opacity: 1; transform: none } }
 </style>
@@ -501,6 +506,10 @@
     <img src="https://i.postimg.cc/j2YmMLV1/Chat-GPT-Image-2026nian8yue9ri-xia-wu06-20-57.png" alt="Maison Doré 品牌實景" class="w-full max-h-[80vh] object-contain">
   </div>
 </div>
+
+<button type="button" id="promo-tab" aria-hidden="true" aria-label="展開限時優惠">
+  <i data-lucide="gift" class="w-4 h-4"></i><span>限時優惠<small>9折</small></span><i data-lucide="chevron-up" class="w-4 h-4"></i>
+</button>
 
 <div id="toast-wrap" class="fixed top-24 right-4 left-4 sm:left-auto sm:w-80 z-[70] grid gap-2 pointer-events-none" aria-live="polite"></div>
 
@@ -918,17 +927,22 @@
 
   /* ================= 促銷優惠彈窗 ================= */
   (function promo() {
-    const el = document.getElementById('promo-popup'); if (!el) return;
-    const GAP = 5000;            // 關閉後每 5 秒再慢慢彈出一次
-    let timer = null;
-    const showIt = () => { el.classList.add('show'); el.setAttribute('aria-hidden', 'false'); };
-    const hide = () => {
-      el.classList.remove('show'); el.setAttribute('aria-hidden', 'true');
-      clearTimeout(timer); timer = setTimeout(showIt, GAP);
+    const el = document.getElementById('promo-popup'), tab = document.getElementById('promo-tab'); if (!el || !tab) return;
+    const KEY = 'md_promo_collapsed';
+    let timer = null, manual = false;
+    try { manual = localStorage.getItem(KEY) === '1'; } catch (e) {}
+    const setOpen = on => {
+      el.classList.toggle('show', on); el.setAttribute('aria-hidden', String(!on));
+      tab.classList.toggle('show', !on); tab.setAttribute('aria-hidden', String(on));
     };
-    el.addEventListener('click', e => { if (e.target.closest('[data-promo-close]')) hide(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && el.classList.contains('show')) hide(); });
-    timer = setTimeout(showIt, GAP);
+    // 手動收起：不再自動彈出，只能點小標籤重新展開
+    const collapse = () => { clearTimeout(timer); manual = true; try { localStorage.setItem(KEY, '1'); } catch (e) {} setOpen(false); };
+    const expand = () => { clearTimeout(timer); manual = false; try { localStorage.removeItem(KEY); } catch (e) {} setOpen(true); };
+    el.addEventListener('click', e => { if (e.target.closest('[data-promo-close]')) collapse(); });
+    tab.addEventListener('click', expand);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && el.classList.contains('show')) collapse(); });
+    if (manual) setOpen(false);                       // 先前手動收起過：直接顯示小標籤
+    else timer = setTimeout(() => { if (!manual) setOpen(true); }, 5000);   // 否則 5 秒後慢慢彈出
   })();
 
   /* ================= 滑動視差錯視 ================= */
