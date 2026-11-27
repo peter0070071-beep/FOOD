@@ -309,7 +309,7 @@
 
   <!-- Stats：阿爾卑斯山互動數據 -->
   <div class="max-w-6xl mx-auto mt-24 reveal">
-    <p class="text-center font-display text-gold-500 tracking-[.4em] text-xs mb-3">LES ALPES · EN CHIFFRES</p>
+    <p id="alps-eyebrow" class="text-center font-display text-gold-500 tracking-[.4em] text-xs mb-3">LES ALPES · EN CHIFFRES</p>
     <div id="alps" class="alps frame bg-ink-800/60" aria-label="阿爾卑斯山互動數據圖">
       <svg viewBox="0 0 1200 520" preserveAspectRatio="xMidYMax meet" class="alps-svg" aria-hidden="true">
         <defs>
@@ -1211,32 +1211,33 @@ function main() {
   let renderer;
   try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' }); } catch (e) { return; }   // 不支援 WebGL：保留 2D 版
   box.insertBefore(canvas, box.firstChild); box.classList.add('is3d');
-  const hint = box.querySelector('.alps-hint'); if (hint) hint.textContent = '拖曳旋轉山景・滑過山峰看數據・點擊山峰拉近';
+  const hint = box.querySelector('.alps-hint'); if (hint) hint.textContent = '拖曳旋轉・滑過火山看數據・點擊火山讓它噴發';
+  const eyebrow = document.getElementById('alps-eyebrow'); if (eyebrow) eyebrow.textContent = 'LES VOLCANS · EN CHIFFRES';
+  box.setAttribute('aria-label', '火山互動數據圖');
   const DPR = Math.min(devicePixelRatio || 1, 2);
   renderer.setPixelRatio(DPR);
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.1;
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  const scene = new THREE.Scene(); scene.fog = new THREE.Fog(0x7a5648, 16, 46);
+  const scene = new THREE.Scene(); scene.fog = new THREE.Fog(0x3a1c18, 14, 44);
   const camera = new THREE.PerspectiveCamera(40, 1, .1, 200);
 
-  // ---- 天空：黃昏漸層 ----
+  // ---- 天空：火山灰紅黑漸層 ----
   const sky = new THREE.Mesh(new THREE.SphereGeometry(110, 32, 18), new THREE.ShaderMaterial({
     side: THREE.BackSide, depthWrite: false, fog: false,
-    uniforms: { top: { value: new THREE.Color(0x1d1430) }, mid: { value: new THREE.Color(0x5b3a48) }, hor: { value: new THREE.Color(0xe8a862) } },
+    uniforms: { top: { value: new THREE.Color(0x0d0a10) }, mid: { value: new THREE.Color(0x2e1618) }, hor: { value: new THREE.Color(0xc2461f) } },
     vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
-    fragmentShader: 'varying vec3 vP; uniform vec3 top; uniform vec3 mid; uniform vec3 hor; void main(){ float h = max(vP.y,0.0); vec3 c = mix(hor, mid, smoothstep(0.0,0.28,h)); c = mix(c, top, smoothstep(0.22,0.85,h)); gl_FragColor = vec4(c,1.0); }'
+    fragmentShader: 'varying vec3 vP; uniform vec3 top; uniform vec3 mid; uniform vec3 hor; void main(){ float h = max(vP.y,0.0); vec3 c = mix(hor, mid, smoothstep(0.0,0.24,h)); c = mix(c, top, smoothstep(0.2,0.8,h)); gl_FragColor = vec4(c,1.0); }'
   })); scene.add(sky);
 
-  // ---- 燈光與陰影 ----
-  scene.add(new THREE.HemisphereLight(0xffd9a8, 0x3a2a24, .75));
-  scene.add(new THREE.AmbientLight(0xffe6c4, .35));
-  const sun = new THREE.DirectionalLight(0xffd29a, 2.6); sun.position.set(8, 9, 7); sun.castShadow = true;
+  // ---- 燈光 ----
+  scene.add(new THREE.HemisphereLight(0xff9a60, 0x201010, .55));
+  scene.add(new THREE.AmbientLight(0xffc8a0, .22));
+  const sun = new THREE.DirectionalLight(0xffb080, 1.5); sun.position.set(8, 9, 7); sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -17, right: 17, top: 14, bottom: -14, near: 1, far: 45 }); sun.shadow.bias = -.0006; sun.shadow.normalBias = .04;
   scene.add(sun);
-  const rim = new THREE.DirectionalLight(0x9c7bd0, .55); rim.position.set(-9, 5, -7); scene.add(rim);
+  const rim = new THREE.DirectionalLight(0xff4a20, .7); rim.position.set(-9, 5, -7); scene.add(rim);
 
-  // ---- 雜訊與山形 ----
-  const GOLD = new THREE.Color(0xe4d9bd), WHITE = new THREE.Color(0xfffaf0);
+  // ---- 雜訊與火山地形 ----
   const hash = (x, y, z) => { const s = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return s - Math.floor(s); };
   function vn(x, y, z) {
     const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z), xf = x - xi, yf = y - yi, zf = z - zi;
@@ -1245,102 +1246,114 @@ function main() {
   }
   const fb = (x, y, z) => vn(x, y, z) * .55 + vn(x * 2.1, y * 2.1, z * 2.1) * .3 + vn(x * 4.3, y * 4.3, z * 4.3) * .15;
   const sstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-  function surf(d, ang, f) {                       // f: 0 山腳 → 1 山頂
-    const ca = Math.cos(ang), sa = Math.sin(ang);
-    let rr = d.R * Math.pow(1 - f, 1.5);
-    const nx = ca * 2.1 + d.seed, nz = sa * 2.1 + d.seed * 1.7, ny = f * 3.2;
-    const n = fb(nx, ny, nz), rid = 1 - Math.abs(fb(nx * 1.6, ny * 1.6 + 3, nz * 1.6) * 2 - 1);
-    rr *= 1 + (n - .5) * .7 * (1 - f * .35) + (rid - .5) * .75 * Math.min(1, f * 2.5) * (1 - f * .6);
-    return [ca * rr, d.H * f + (rid - .5) * .35 * (1 - f) * f * 4, sa * rr * .95];
+  // f: 0~1 外坡（山腳→火山口邊緣）；1~2 火山口內壁（邊緣→岩漿湖）
+  function surf(d, ang, f) {
+    const ca = Math.cos(ang), sa = Math.sin(ang), nx = ca * 1.8 + d.seed, nz = sa * 1.8 + d.seed * 1.7;
+    if (f <= 1) {
+      const n = fb(nx, f * 2.6, nz), rid = 1 - Math.abs(fb(nx * 1.5, f * 3 + 3, nz * 1.5) * 2 - 1);
+      const rr = (d.cr + (d.R - d.cr) * Math.pow(1 - f, 1.45)) * (1 + (n - .5) * .35 * (1 - f * .6) + (rid - .5) * .22 * (1 - f));
+      return [ca * rr, d.H * f + (n - .5) * .18 * (1 - f), sa * rr * .95];
+    }
+    const g = f - 1, n1 = fb(nx, 2.6, nz);
+    return [ca * d.cr * (1 + (n1 - .5) * .14) * (1 - g * .58), d.H - d.dep * Math.pow(g, .8) + (fb(nx * 1.3, g * 2 + 7, nz * 1.3) - .5) * .06, sa * d.cr * (1 + (n1 - .5) * .14) * (1 - g * .58) * .95];
   }
-  const tc = new THREE.Color();
-  function buildMountain(d, RS, HS, colored) {
-    const v = new Float32Array((HS + 1) * RS * 3), idx = [];
-    for (let j = 0; j <= HS; j++) for (let i = 0; i < RS; i++) { const p = surf(d, i / RS * 6.28318, Math.min(j / HS, .9995)); v.set(p, (j * RS + i) * 3); }
-    for (let j = 0; j < HS; j++) for (let i = 0; i < RS; i++) { const a = j * RS + i, b = j * RS + (i + 1) % RS, c = (j + 1) * RS + i, e = (j + 1) * RS + (i + 1) % RS; idx.push(a, c, b, b, c, e); }
+  const tc = new THREE.Color(), cA = new THREE.Color(0x2d2523), cB = new THREE.Color(0x58463d), cAsh = new THREE.Color(0x6e665f), cSkirt = new THREE.Color(0x1b1514), cHot = new THREE.Color(0xb24a1c);
+  function buildMountain(d, RS, HS, CS, colored) {
+    const fs = []; for (let j = 0; j <= HS; j++) fs.push(Math.min(j / HS, 1)); for (let k = 1; k <= CS; k++) fs.push(1 + k / CS);
+    const rows = fs.length, v = new Float32Array(rows * RS * 3), idx = [];
+    for (let j = 0; j < rows; j++) for (let i = 0; i < RS; i++) v.set(surf(d, i / RS * 6.28318, fs[j]), (j * RS + i) * 3);
+    for (let j = 0; j < rows - 1; j++) for (let i = 0; i < RS; i++) { const a = j * RS + i, b = j * RS + (i + 1) % RS, c = (j + 1) * RS + i, e = (j + 1) * RS + (i + 1) % RS; idx.push(a, c, b, b, c, e); }
     const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(v, 3)); geo.setIndex(idx); geo.computeVertexNormals();
     if (colored) {
-      const nrm = geo.attributes.normal, col = new Float32Array((HS + 1) * RS * 3);
-      for (let k = 0; k < (HS + 1) * RS; k++) {
-        const x = v[k * 3], y = v[k * 3 + 1], z = v[k * 3 + 2], h = y / d.H, ny = nrm.getY(k);
-        const rock = fb(x * 2.2, y * 2.2, z * 2.2), sl = .5 + (fb(x * 1.3 + 9, y * 1.3, z * 1.3) - .5) * .26;
-        tc.setHex(0x5e4a3c).lerp(new THREE.Color(0xa08e78), rock).multiplyScalar(.6 + ny * .6);
-        const forest = sstep(.3, .05, h) * sstep(.3, .6, ny); if (forest > 0) tc.lerp(new THREE.Color(0x3f5230), forest * .9);
-        const snow = sstep(sl, sl + .08, h) * sstep(.3, .62, ny); if (snow > 0) tc.lerp(new THREE.Color(0xfff6e4), snow);
+      const nrm = geo.attributes.normal, col = new Float32Array(rows * RS * 3);
+      for (let j = 0; j < rows; j++) for (let i = 0; i < RS; i++) {
+        const k = j * RS + i, x = v[k * 3], y = v[k * 3 + 1], z = v[k * 3 + 2], f = fs[j], h = Math.min(1, y / d.H), ny = nrm.getY(k), rock = fb(x * 2.4, y * 2.4, z * 2.4);
+        tc.copy(cA).lerp(cB, rock).multiplyScalar(.65 + Math.abs(ny) * .55);
+        tc.lerp(cAsh, sstep(.2, .65, h) * sstep(.45, .8, ny) * .35); tc.lerp(cSkirt, sstep(.14, 0, h) * .7);
+        tc.lerp(cHot, sstep(.9, 1.0, f) * .55 + sstep(1.0, 1.6, f) * .45);
         col.set([tc.r, tc.g, tc.b], k * 3);
       }
       geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
     }
-    return { geo, v, RS, HS };
-  }
-  function goldLines(d, b, mat) {                  // 金色等高線 + 山稜線
-    const g = new THREE.Group();
-    for (let j = 4; j < b.HS; j += 6) {
-      const pts = new Float32Array(b.RS * 3);
-      for (let i = 0; i < b.RS; i++) { const k = (j * b.RS + i) * 3; pts[i * 3] = b.v[k] * 1.004; pts[i * 3 + 1] = b.v[k + 1] + .012; pts[i * 3 + 2] = b.v[k + 2] * 1.004; }
-      const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.BufferAttribute(pts, 3)); g.add(new THREE.LineLoop(lg, mat));
-    }
-    for (let i = 0; i < b.RS; i += 14) {
-      const pts = new Float32Array((b.HS + 1) * 3);
-      for (let j = 0; j <= b.HS; j++) { const k = (j * b.RS + i) * 3; pts[j * 3] = b.v[k] * 1.005; pts[j * 3 + 1] = b.v[k + 1] + .015; pts[j * 3 + 2] = b.v[k + 2] * 1.005; }
-      const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.BufferAttribute(pts, 3)); g.add(new THREE.Line(lg, mat));
-    }
-    return g;
+    return { geo, v, RS, rows };
   }
 
-  // ---- 三座主峰（對應三個數據）----
-  const defs = [{ cx: -5.2, cz: -.4, R: 3.2, H: 3.8, seed: 1.3 }, { cx: 0, cz: -1.6, R: 3.8, H: 5.4, seed: 4.1 }, { cx: 5.2, cz: .2, R: 3.3, H: 4.4, seed: 7.7 }];
-  const pineGeo = new THREE.ConeGeometry(.11, .42, 6); pineGeo.translate(0, .21, 0);
-  const pineMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, flatShading: true, emissive: 0x1d3318, emissiveIntensity: .6 });
-  const peaks = defs.map((d, i) => {
-    const b = buildMountain(d, 84, 64, true);
-    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .95, emissive: 0xe4c878, emissiveIntensity: 0 });
-    const mesh = new THREE.Mesh(b.geo, mat); mesh.position.set(d.cx, 0, d.cz); mesh.userData.i = i; mesh.castShadow = mesh.receiveShadow = true;
-    const lineMat = new THREE.LineBasicMaterial({ color: 0xe4d9bd, transparent: true, opacity: 0, fog: false, blending: THREE.AdditiveBlending, depthWrite: false });
-    const lines = goldLines(d, b, lineMat); mesh.add(lines);
-    // 松樹
-    const N = 150, trees = new THREE.InstancedMesh(pineGeo, pineMat, N), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), ps = new THREE.Vector3(), cc = new THREE.Color();
-    for (let k = 0; k < N; k++) {
-      const ang = Math.random() * 6.28318, f = .015 + Math.random() * .24, p = surf(d, ang, f);
-      ps.set(p[0] * .985, p[1] - .02, p[2] * .985); const s = .7 + Math.random() * .8; sc.set(s, s * (.9 + Math.random() * .6), s);
-      m4.compose(ps, q, sc); trees.setMatrixAt(k, m4); trees.setColorAt(k, cc.setHex(0x3f6334).lerp(new THREE.Color(0x7a9a4a), Math.random()));
-    }
-    trees.castShadow = true; mesh.add(trees);
-    // 山頂金旗（會發光）
-    const flag = new THREE.Group(); flag.position.set(0, d.H, 0);
-    const pole = new THREE.Mesh(new THREE.CylinderGeometry(.014, .014, .8, 6), new THREE.MeshBasicMaterial({ color: 0xe4d9bd })); pole.position.y = .4; flag.add(pole);
-    const cloth = new THREE.Mesh(new THREE.PlaneGeometry(.46, .28), new THREE.MeshBasicMaterial({ color: 0xffd36e, side: THREE.DoubleSide, toneMapped: false })); cloth.position.set(.23, .66, 0); flag.add(cloth);
-    mesh.add(flag); scene.add(mesh);
-    return { ...d, mesh, lineMat, flag, cloth, glow: 0 };
-  });
+  // ---- 岩漿材質（貼圖會流動）----
+  const lc = document.createElement('canvas'); lc.width = lc.height = 256; const lx = lc.getContext('2d');
+  lx.fillStyle = '#7a1a05'; lx.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 160; i++) { const x = Math.random() * 256, y = Math.random() * 256, r = 10 + Math.random() * 26; for (const [ox, oy] of [[0, 0], [-256, 0], [256, 0], [0, -256], [0, 256]]) { const g = lx.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r); g.addColorStop(0, i % 3 ? 'rgba(255,200,60,.95)' : 'rgba(255,120,20,.9)'); g.addColorStop(1, 'rgba(255,80,0,0)'); lx.fillStyle = g; lx.fillRect(x + ox - r, y + oy - r, r * 2, r * 2); } }
+  for (let i = 0; i < 40; i++) { const x = Math.random() * 256, y = Math.random() * 256, r = 6 + Math.random() * 14, g = lx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, 'rgba(40,12,6,.8)'); g.addColorStop(1, 'rgba(40,12,6,0)'); lx.fillStyle = g; lx.fillRect(x - r, y - r, r * 2, r * 2); }
+  const lavaTex = new THREE.CanvasTexture(lc); lavaTex.wrapS = lavaTex.wrapT = THREE.RepeatWrapping; lavaTex.colorSpace = THREE.SRGBColorSpace; lavaTex.repeat.set(5, 1);
+  const lakeTex = lavaTex.clone(); lakeTex.needsUpdate = true; lakeTex.repeat.set(1.4, 1.4);
 
-  // ---- 遠景山脈（大氣透視）----
-  const farMat = new THREE.MeshStandardMaterial({ color: 0x5d4450, roughness: 1, flatShading: true });
-  [[-13, -9, 4.6, 6.8], [-8.5, -11, 5.2, 7.8], [-2.5, -13, 5.8, 8.8], [4, -12, 5.2, 7.4], [9, -10, 4.8, 6.4], [13.5, -9, 4.2, 5.8], [-17, -8, 4.8, 5.4], [17.5, -8, 4.4, 5.2], [0, -19, 8, 11], [-12, -18, 7, 9], [13, -17, 7, 9.5]].forEach(([x, z, R, H], n) => {
-    const d = { R, H, seed: n * 2.3 + .5 }, b = buildMountain(d, 36, 16, false);
-    const m = new THREE.Mesh(b.geo, farMat); m.position.set(x, -.2, z); scene.add(m);
-    const ls = new THREE.LineSegments(new THREE.EdgesGeometry(b.geo, 40), new THREE.LineBasicMaterial({ color: 0xc9a86a, transparent: true, opacity: .18, fog: true })); m.add(ls);
-  });
-
-  // ---- 地面：金色網格 ----
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(120, 80), new THREE.MeshStandardMaterial({ color: 0x2b211b, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.position.y = -.25; ground.receiveShadow = true; scene.add(ground);
-  const grid = new THREE.GridHelper(60, 60, 0xc9a86a, 0xc9a86a); grid.position.y = -.2; grid.material.transparent = true; grid.material.opacity = .12; scene.add(grid);
-
-  // ---- 星空、月亮、金粉、薄霧 ----
-  const sg2 = new Float32Array(320 * 3);
-  for (let i = 0; i < 320; i++) { const a = Math.random() * Math.PI * 2, e = Math.random() * .85 + .15, r = 80; sg2[i * 3] = Math.cos(a) * Math.cos(e) * r; sg2[i * 3 + 1] = Math.sin(e) * r * .8 + 8; sg2[i * 3 + 2] = -Math.abs(Math.sin(a)) * Math.cos(e) * r - 10; }
-  const starGeo = new THREE.BufferGeometry(); starGeo.setAttribute('position', new THREE.BufferAttribute(sg2, 3));
-  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xfff3cf, size: 1.8, sizeAttenuation: false, fog: false, transparent: true, opacity: .8 })); scene.add(stars);
   const mk = (stops, size) => { const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d'), g = x.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2); stops.forEach(([o, col]) => g.addColorStop(o, col)); x.fillStyle = g; x.fillRect(0, 0, size, size); return new THREE.CanvasTexture(c); };
-  const glowTex = mk([[0, 'rgba(255,243,207,.95)'], [.3, 'rgba(255,243,207,.35)'], [1, 'rgba(255,243,207,0)']], 128);
-  const moonGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, transparent: true, fog: false, depthWrite: false, blending: THREE.AdditiveBlending })); moonGlow.scale.set(11, 11, 1); moonGlow.position.set(11, 9.5, -26); scene.add(moonGlow);
-  const moon = new THREE.Mesh(new THREE.SphereGeometry(1.15, 28, 18), new THREE.MeshBasicMaterial({ color: 0xfff3cf, fog: false, toneMapped: false })); moon.position.copy(moonGlow.position); scene.add(moon);
-  const mistTex = mk([[0, 'rgba(255,226,180,.55)'], [1, 'rgba(255,226,180,0)']], 128), mists = [];
-  for (let i = 0; i < 6; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: mistTex, transparent: true, opacity: .32, depthWrite: false, fog: false })); s.scale.set(16, 3.2, 1); s.position.set(-14 + i * 6, .7 + (i % 3) * .5, -3 - (i % 4) * 2.2); s.userData.sp = .15 + i * .03; scene.add(s); mists.push(s); }
-  const DUST = 140, dustPos = new Float32Array(DUST * 3), dustSeed = [];
+  const glowTex = mk([[0, 'rgba(255,230,160,1)'], [.35, 'rgba(255,140,40,.55)'], [1, 'rgba(255,80,0,0)']], 128);
+  const smokeTex = mk([[0, 'rgba(255,255,255,.8)'], [1, 'rgba(255,255,255,0)']], 128);
+
+  // ---- 三座火山（對應三個數據）----
+  const defs = [{ cx: -5.2, cz: -.4, R: 3.5, H: 3.4, seed: 1.3 }, { cx: 0, cz: -1.6, R: 4.2, H: 4.6, seed: 4.1 }, { cx: 5.2, cz: .2, R: 3.6, H: 3.9, seed: 7.7 }];
+  const peaks = defs.map((d, i) => {
+    d.cr = d.R * .26; d.dep = d.H * .24;
+    const b = buildMountain(d, 84, 56, 8, true);
+    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .92, emissive: 0xff5a20, emissiveIntensity: 0 });
+    const mesh = new THREE.Mesh(b.geo, mat); mesh.position.set(d.cx, 0, d.cz); mesh.userData.i = i; mesh.castShadow = mesh.receiveShadow = true;
+    // 岩漿湖
+    const lakeMat = new THREE.MeshBasicMaterial({ map: lakeTex, color: new THREE.Color(1.9, 1.3, .8), toneMapped: false });
+    const lake = new THREE.Mesh(new THREE.CircleGeometry(d.cr * .62, 40), lakeMat); lake.rotation.x = -Math.PI / 2; lake.position.y = d.H - d.dep + .03; mesh.add(lake);
+    // 岩漿河
+    const flowMat = new THREE.MeshBasicMaterial({ map: lavaTex, color: new THREE.Color(2, 1.3, .8), toneMapped: false });
+    for (let k = 0; k < 4; k++) {
+      const a0 = k * 1.57 + Math.random() * .8, pts = [];
+      for (let s = 0; s <= 16; s++) { const f = .985 - s / 16 * .68, ang = a0 + Math.sin(s * .9 + k * 2) * .14, p = surf(d, ang, f); pts.push(new THREE.Vector3(p[0] * 1.012, p[1] + .03, p[2] * 1.012)); }
+      mesh.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, .055, 5, false), flowMat));
+    }
+    const light = new THREE.PointLight(0xff6a20, 2.2, 11, 1.6); light.position.set(d.cx, d.H + .6, d.cz); scene.add(light);
+    // 衝擊波
+    const ring = new THREE.Mesh(new THREE.RingGeometry(.9, 1, 56), new THREE.MeshBasicMaterial({ color: new THREE.Color(2, 1.1, .5), transparent: true, opacity: 0, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+    ring.rotation.x = -Math.PI / 2; ring.visible = false; scene.add(ring);
+    // 熔岩噴泉粒子
+    const N = 280, pos = new Float32Array(N * 3).fill(-50), colr = new Float32Array(N * 3), vel = new Float32Array(N * 3), life = new Float32Array(N), pg = new THREE.BufferGeometry();
+    pg.setAttribute('position', new THREE.BufferAttribute(pos, 3)); pg.setAttribute('color', new THREE.BufferAttribute(colr, 3));
+    const pts = new THREE.Points(pg, new THREE.PointsMaterial({ map: glowTex, size: .42, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false })); pts.frustumCulled = false; scene.add(pts);
+    // 火山灰
+    const plume = []; for (let k = 0; k < 12; k++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: smokeTex, transparent: true, opacity: 0, depthWrite: false, fog: false })); scene.add(s); plume.push(s); }
+    scene.add(mesh);
+    return { ...d, mesh, flowMat, lakeMat, light, ring, burst: { N, pos, colr, vel, life, pg, cur: 0 }, plume, glow: 0, t0: -1e9, acc: 0 };
+  });
+  function emitAt(p, n, speed) {
+    const B = p.burst, top = p.H * p.mesh.scale.y + .05;
+    for (let k = 0; k < n; k++) {
+      const i = B.cur++ % B.N, a = Math.random() * 6.28, r = Math.random() * p.cr * .4;
+      B.pos[i * 3] = p.cx + Math.cos(a) * r; B.pos[i * 3 + 1] = top; B.pos[i * 3 + 2] = p.cz + Math.sin(a) * r;
+      B.vel[i * 3] = (Math.random() - .5) * 2.6; B.vel[i * 3 + 1] = speed * (.65 + Math.random() * .55); B.vel[i * 3 + 2] = (Math.random() - .5) * 2.6; B.life[i] = 1;
+    }
+  }
+
+  // ---- 遠景山脈（火山灰色）----
+  const farMat = new THREE.MeshStandardMaterial({ color: 0x3a2a2c, roughness: 1, flatShading: true });
+  [[-13, -9, 4.6, 6.4], [-8.5, -11, 5.2, 7.4], [-2.5, -13, 5.8, 8.4], [4, -12, 5.2, 7], [9, -10, 4.8, 6], [13.5, -9, 4.2, 5.4], [-17, -8, 4.8, 5], [17.5, -8, 4.4, 4.8], [0, -19, 8, 10.5], [-12, -18, 7, 8.5], [13, -17, 7, 9]].forEach(([x, z, R, H], n) => {
+    const d = { R, H, seed: n * 2.3 + .5, cr: R * .12, dep: H * .1 }, b = buildMountain(d, 36, 16, 2, false);
+    const m = new THREE.Mesh(b.geo, farMat); m.position.set(x, -.2, z); scene.add(m);
+    m.add(new THREE.LineSegments(new THREE.EdgesGeometry(b.geo, 40), new THREE.LineBasicMaterial({ color: 0xff7a3a, transparent: true, opacity: .16, fog: true })));
+  });
+
+  // ---- 地面：黑色玄武岩 + 發光裂縫網格 ----
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(120, 80), new THREE.MeshStandardMaterial({ color: 0x191210, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.position.y = -.25; ground.receiveShadow = true; scene.add(ground);
+  const grid = new THREE.GridHelper(60, 60, 0xff6a2a, 0xff6a2a); grid.position.y = -.2; grid.material.transparent = true; grid.material.opacity = .1; scene.add(grid);
+
+  // ---- 星空、暗紅月亮、飄浮火星、濃煙 ----
+  const sg2 = new Float32Array(200 * 3);
+  for (let i = 0; i < 200; i++) { const a = Math.random() * Math.PI * 2, e = Math.random() * .85 + .15, r = 80; sg2[i * 3] = Math.cos(a) * Math.cos(e) * r; sg2[i * 3 + 1] = Math.sin(e) * r * .8 + 8; sg2[i * 3 + 2] = -Math.abs(Math.sin(a)) * Math.cos(e) * r - 10; }
+  const starGeo = new THREE.BufferGeometry(); starGeo.setAttribute('position', new THREE.BufferAttribute(sg2, 3));
+  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffd9b0, size: 1.5, sizeAttenuation: false, fog: false, transparent: true, opacity: .5 })); scene.add(stars);
+  const moonGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, transparent: true, fog: false, depthWrite: false, blending: THREE.AdditiveBlending, opacity: .8 })); moonGlow.scale.set(10, 10, 1); moonGlow.position.set(11, 9.5, -26); scene.add(moonGlow);
+  const moon = new THREE.Mesh(new THREE.SphereGeometry(1.05, 28, 18), new THREE.MeshBasicMaterial({ color: 0xff9a5a, fog: false, toneMapped: false })); moon.position.copy(moonGlow.position); scene.add(moon);
+  const mistTex = mk([[0, 'rgba(190,90,60,.5)'], [1, 'rgba(190,90,60,0)']], 128), mists = [];
+  for (let i = 0; i < 6; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: mistTex, transparent: true, opacity: .3, depthWrite: false, fog: false })); s.scale.set(16, 3.2, 1); s.position.set(-14 + i * 6, .7 + (i % 3) * .5, -3 - (i % 4) * 2.2); s.userData.sp = .15 + i * .03; scene.add(s); mists.push(s); }
+  const DUST = 160, dustPos = new Float32Array(DUST * 3), dustSeed = [];
   for (let i = 0; i < DUST; i++) { dustPos[i * 3] = (Math.random() - .5) * 22; dustPos[i * 3 + 1] = Math.random() * 7; dustPos[i * 3 + 2] = (Math.random() - .5) * 10; dustSeed.push(Math.random() * 6.28); }
   const dustGeo = new THREE.BufferGeometry(); dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
-  const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ map: glowTex, color: 0xffe3a0, size: .26, transparent: true, opacity: .75, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(dust);
+  const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ map: glowTex, color: 0xff9a4a, size: .2, transparent: true, opacity: .8, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false })); scene.add(dust);
 
   // ---- 跳跳鍋貼 ----
   const tints = [0xf6e6c4, 0xfaecd0, 0xf2dfb8, 0xf8e9c9];
@@ -1350,7 +1363,7 @@ function main() {
     const pos = geo.attributes.position, col = new Float32Array(pos.count * 3), dough = new THREE.Color(tint), crisp = new THREE.Color(0xc4802a), c = new THREE.Color();
     for (let i = 0; i < pos.count; i++) { const k = Math.min(1, Math.max(0, (-pos.getY(i) - .01) / .07)); c.copy(dough).lerp(crisp, k); col.set([c.r, c.g, c.b], i * 3); }
     geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    body.add(new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: .45, clearcoat: .6, clearcoatRoughness: .35, emissive: 0x5a3a10, emissiveIntensity: .18 })));
+    body.add(new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: .45, clearcoat: .6, clearcoatRoughness: .35, emissive: 0x5a3a10, emissiveIntensity: .25 })));
     const pm = new THREE.MeshStandardMaterial({ color: 0xeed9ab, roughness: .6 });
     for (let i = 0; i < 8; i++) { const a = -1.05 + i * .3, p = new THREE.Mesh(new THREE.BoxGeometry(.026, .05, .085), pm); p.position.set(Math.sin(a) * .215, Math.cos(a) * .105 + .03, 0); p.rotation.z = -a * .9; body.add(p); }
     const eyeM = new THREE.MeshBasicMaterial({ color: 0x2a2119 });
@@ -1363,25 +1376,25 @@ function main() {
   const hikers = hikerSpec.map(([pi, ph, dir], n) => {
     const m = makeHiker(tints[n % tints.length]); scene.add(m);
     const steam = [0, 1].map(() => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: steamTex, transparent: true, opacity: 0, depthWrite: false, fog: false })); scene.add(s); return s; });
-    return { m, steam, pi, ph, dir, a0: n * 1.7, speed: .16 + (n % 3) * .03, prev: new THREE.Vector3(), yaw: 0 };
+    return { n, m, steam, pi, ph, dir, a0: n * 1.7, speed: .16 + (n % 3) * .03, prev: new THREE.Vector3(), from: new THREE.Vector3(), pos: new THREE.Vector3(), vel: new THREE.Vector3(), yaw: 0, mode: 'walk', t: 0, t0: 0, spin: 0 };
   });
   const ray = new THREE.Raycaster(), down = new THREE.Vector3(0, -1, 0), tmp = new THREE.Vector3();
 
   // ---- 後製：輝光 ----
-  let composer = null, bloom = null;
+  let composer = null;
   if (EffectComposer) {
     try {
       composer = new EffectComposer(renderer); composer.setPixelRatio(DPR);
       composer.addPass(new RenderPass(scene, camera));
-      bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), .55, .7, .86); composer.addPass(bloom);
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(512, 512), .85, .75, .8));
       composer.addPass(new OutputPass());
     } catch (e) { composer = null; }
   }
 
   // ---- 狀態與互動 ----
   const btns = Array.from(box.querySelectorAll('.alp-btn'));
-  let W = 1, Hh = 1, yaw = 0, yawT = 0, pitch = .2, sel = null, hoverI = null, dragging = false, moved = 0, lastX = 0, started = false, t0 = 0, visible = false, raf = 0;
-  const sprint = [0, 0, 0], camTarget = new THREE.Vector3(0, 2.1, 0), camTargetGoal = new THREE.Vector3(0, 2.1, 0); let dist = 14, distGoal = 14;
+  let W = 1, Hh = 1, yaw = 0, yawT = 0, pitch = .2, sel = null, hoverI = null, dragging = false, moved = 0, lastX = 0, started = false, t0 = 0, visible = false, raf = 0, lastBoom = -1e9;
+  const camTarget = new THREE.Vector3(0, 2.1, 0), camTargetGoal = new THREE.Vector3(0, 2.1, 0); let dist = 14, distGoal = 14;
   const rise = () => reduce ? 1 : (started ? Math.min(1, (performance.now() - t0) / 2600) : 0);
   const ease = x => 1 - Math.pow(1 - x, 3);
   const dist0 = () => Math.max(13, 17 / (2 * Math.tan(camera.fov * Math.PI / 360) * camera.aspect));
@@ -1394,65 +1407,107 @@ function main() {
     const r = canvas.getBoundingClientRect(); ray.setFromCamera(new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), camera);
     const hit = ray.intersectObjects(peaks.map(p => p.mesh), false)[0]; return hit ? hit.object.userData.i : null;
   }
-  function select(i, notify = true) {
-    sel = (sel === i) ? null : i;
-    if (sel != null) { const p = peaks[sel]; camTargetGoal.set(p.cx, p.H * .55, p.cz); distGoal = Math.max(8, dist0() * .58); sprint[sel] = performance.now() + 4500; if (notify) box.dispatchEvent(new CustomEvent('alp-select', { detail: sel })); }
-    else { camTargetGoal.set(0, 2.1, 0); distGoal = dist0(); }
+  function erupt(i) {                       // 火山噴發 + 鍋貼衝向火山口
+    const p = peaks[i], now = performance.now(); if (rise() < .8) return;
+    p.t0 = now; lastBoom = now; p.ring.visible = true; emitAt(p, 170, 8.5);
+    hikers.forEach(h => { if (h.pi === i && h.mode === 'walk') { h.mode = 'run'; } });
   }
+  function select(i, notify = true) {
+    if (sel !== i) { sel = i; const p = peaks[i]; camTargetGoal.set(p.cx, p.H * .6, p.cz); distGoal = Math.max(8.5, dist0() * .62); }
+    erupt(i); if (notify) box.dispatchEvent(new CustomEvent('alp-select', { detail: i }));
+  }
+  function deselect() { sel = null; camTargetGoal.set(0, 2.1, 0); distGoal = dist0(); }
   canvas.addEventListener('pointerdown', e => { dragging = true; moved = 0; lastX = e.clientX; canvas.setPointerCapture(e.pointerId); });
   canvas.addEventListener('pointermove', e => {
     if (dragging) { const dx = e.clientX - lastX; lastX = e.clientX; moved += Math.abs(dx); yawT = Math.max(-.9, Math.min(.9, yawT + dx * .006)); return; }
     const i = pick(e); if (i !== hoverI) { hoverI = i; if (i == null) box.removeAttribute('data-active'); else box.setAttribute('data-active', i); }
   });
-  canvas.addEventListener('pointerup', e => { dragging = false; if (moved < 6) { const i = pick(e); if (i != null) select(i); else if (sel != null) select(sel); } });
+  canvas.addEventListener('pointerup', e => { dragging = false; if (moved < 6) { const i = pick(e); if (i != null) select(i); else if (sel != null) deselect(); } });
   canvas.addEventListener('pointerleave', () => { if (!dragging && hoverI != null) { hoverI = null; box.removeAttribute('data-active'); } });
   btns.forEach(b => b.addEventListener('click', () => select(+b.dataset.i, false)));
 
   // ---- 每幀 ----
+  const camOff = new THREE.Vector3();
   function frame(now) {
     raf = 0; if (!visible) return;
     const time = now / 1000, rp = rise(), dt = Math.min(.1, (now - (frame.last || now)) / 1000); frame.last = now;
+    lavaTex.offset.x -= dt * .06; lakeTex.offset.x += dt * .02; lakeTex.offset.y += dt * .015;
     peaks.forEach((p, i) => {
-      const k = ease(Math.max(0, Math.min(1, rp * 1.5 - i * .25)));
-      p.mesh.scale.set(1, Math.max(.001, k), 1);
-      const act = box.dataset.active != null ? +box.dataset.active : -1, on = (i === act || i === sel) ? 1 : 0;
-      p.glow += (on - p.glow) * .12;
-      p.mesh.material.emissiveIntensity = p.glow * .14;
-      p.lineMat.color.copy(GOLD).lerp(WHITE, p.glow); p.lineMat.opacity = Math.min(1, k) * (.22 + p.glow * .5);
-      p.mesh.position.y = p.glow * .06;
-      p.cloth.rotation.y = Math.sin(time * 3 + i) * .5; p.flag.visible = k > .95;
+      const k = ease(Math.max(0, Math.min(1, rp * 1.5 - i * .25))); p.mesh.scale.set(1, Math.max(.001, k), 1);
+      const act = box.dataset.active != null ? +box.dataset.active : -1, on = (i === act || i === sel) ? 1 : 0; p.glow += (on - p.glow) * .12;
+      const el = (now - p.t0) / 1000, ei = el >= 0 && el < 8 ? Math.min(1, el / .5) * Math.max(0, 1 - Math.max(0, el - 2.5) / 5.5) : 0, boom = el >= 0 ? Math.exp(-el * 1.8) : 0;
+      p.mesh.material.emissiveIntensity = p.glow * .1 + ei * .12;
+      const fl = 1.7 + Math.sin(time * 3 + i) * .25 + p.glow * .5 + ei * 1.6; p.flowMat.color.setRGB(fl, fl * .62, fl * .35); p.lakeMat.color.setRGB(fl, fl * .68, fl * .4);
+      p.light.intensity = 2.2 + p.glow * 2 + boom * 30 + ei * 7 + Math.sin(time * 5 + i * 2) * .3;
+      const top = p.H * k + .05;
+      // 衝擊波
+      if (p.ring.visible) { if (el > 1.5) p.ring.visible = false; else { const s = .5 + el * 9; p.ring.scale.set(s, s, 1); p.ring.position.set(p.cx, p.H * k * .9, p.cz); p.ring.material.opacity = (1 - el / 1.5) * .8; } }
+      // 持續噴射
+      p.acc += dt * (4 + ei * 120); while (p.acc >= 1) { p.acc -= 1; emitAt(p, 1, ei > .05 ? 8.5 : 2.6); }
+      // 粒子物理
+      const B = p.burst; for (let n = 0; n < B.N; n++) {
+        if (B.life[n] <= 0) continue; B.vel[n * 3 + 1] -= 9 * dt; B.pos[n * 3] += B.vel[n * 3] * dt; B.pos[n * 3 + 1] += B.vel[n * 3 + 1] * dt; B.pos[n * 3 + 2] += B.vel[n * 3 + 2] * dt;
+        B.life[n] -= dt * .42; const l = Math.max(0, B.life[n]); if (l <= 0 || B.pos[n * 3 + 1] < -.2) { B.life[n] = 0; B.pos[n * 3 + 1] = -50; B.colr.fill(0, n * 3, n * 3 + 3); continue; }
+        B.colr[n * 3] = 1.6 * l; B.colr[n * 3 + 1] = (.3 + .9 * l * l) * l; B.colr[n * 3 + 2] = .12 * l * l;
+      }
+      B.pg.attributes.position.needsUpdate = B.pg.attributes.color.needsUpdate = true;
+      // 火山灰柱（平時冒薄煙，噴發時濃黑）
+      p.plume.forEach((s, n) => {
+        const u = ((time * (.16 + ei * .12) + n / 12 + i * .3) % 1);
+        s.position.set(p.cx + Math.sin(u * 5 + n) * .5 * (1 + u * 2) + u * 1.1, top + .2 + u * (2.4 + ei * 5.5), p.cz + Math.cos(u * 4 + n) * .4);
+        const sc = (.7 + u * (1.4 + ei * 3.4)); s.scale.set(sc, sc, 1);
+        s.material.opacity = (1 - u) * (.13 + ei * .55) * Math.min(1, k);
+        const hot = (1 - u) * (1 - u) * ei; s.material.color.setRGB(.2 + hot * .9, .17 + hot * .35, .17 + hot * .1);
+      });
     });
     scene.updateMatrixWorld();
     hikers.forEach(h => {
-      const p = peaks[h.pi], boost = now < sprint[h.pi] ? 2.6 : 1, vis = rp > .75;
-      h.m.visible = vis; if (!vis) { h.steam.forEach(s => s.material.opacity = 0); return; }
-      const hop = Math.abs(Math.sin(time * 5.2 * boost + h.a0));
-      h.ph += dt * h.speed * .35 * boost * (.3 + hop * 1.4);
-      const t = .5 - .5 * Math.cos(h.ph * 6.2832 + h.a0), ang = h.a0 + h.dir * t * 8.6, r = p.R * .62 * (1 - t) + .05;
-      const x = p.cx + Math.cos(ang) * r, z = p.cz + Math.sin(ang) * r * .95;
-      ray.set(tmp.set(x, p.H + 3, z), down); const hit = ray.intersectObject(p.mesh, false)[0];
-      if (hit) h.gy = hit.point.y; const gy = h.gy != null ? h.gy : 0;
-      const dx = x - h.prev.x, dz = z - h.prev.z;
-      if (dx * dx + dz * dz > 1e-8) { const ty = Math.atan2(dx, dz); let d = ty - h.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); h.yaw += d * .2; }
-      h.prev.set(x, gy, z);
-      const py = gy + hop * .42 * boost * .8;
-      h.m.position.set(x, py, z); h.m.rotation.y = h.yaw;
-      const sq = 1 - hop;
-      h.m.userData.body.scale.set(1 + sq * .16 - hop * .05, 1 - sq * .2 + hop * .1, 1 + sq * .16 - hop * .05);
-      h.m.rotation.x = Math.cos(time * 5.2 * boost + h.a0) * .22;
-      h.steam.forEach((s, k) => { const u = (time * .7 + k * .5 + h.a0) % 1; s.position.set(x + Math.sin(u * 6 + k) * .05, py + .55 + u * .75, z); s.material.opacity = (1 - u) * .5; const sc = .22 + u * .5; s.scale.set(sc, sc, 1); });
+      const p = peaks[h.pi], sy = p.mesh.scale.y, vis = rp > .75;
+      if (!vis) { h.m.visible = false; h.steam.forEach(s => s.material.opacity = 0); return; }
+      let x, y, z, hop = 0, scl = 1, spin = 0, moving = true;
+      if (h.mode === 'walk' || h.mode === 'run') {
+        const run = h.mode === 'run'; hop = Math.abs(Math.sin(time * 5.2 * (run ? 1.6 : 1) + h.a0));
+        if (!run) { h.ph += dt * h.speed * .35 * (.3 + hop * 1.4); h.t = .5 - .5 * Math.cos(h.ph * 6.2832 + h.a0); } else h.t = Math.min(1, h.t + dt * .3 * (.35 + hop * 1.3));
+        const ang = h.a0 + h.dir * h.t * 8.6, r = p.cr * 1.02 + (p.R * .62 - p.cr) * (1 - h.t);
+        x = p.cx + Math.cos(ang) * r; z = p.cz + Math.sin(ang) * r * .95;
+        ray.set(tmp.set(x, p.H + 3, z), down); const hit = ray.intersectObject(p.mesh, false)[0]; if (hit) h.gy = hit.point.y; const gy = h.gy != null ? h.gy : 0;
+        y = gy + hop * .42 * (run ? 1.15 : 1);
+        if (run && h.t >= 1) { h.mode = 'dive'; h.t0 = now; h.from.set(x, y, z); }
+      }
+      if (h.mode === 'dive') {                                  // 跳進火山口
+        const u = Math.min(1, (now - h.t0) / 900), ty = (p.H - p.dep * .85) * sy;
+        x = h.from.x + (p.cx - h.from.x) * u; z = h.from.z + (p.cz - h.from.z) * u; y = h.from.y + (ty - h.from.y) * u + Math.sin(u * Math.PI) * 1.3;
+        scl = 1 - u * .85; spin = u * 9; moving = false;
+        if (u >= 1) { h.mode = 'gone'; h.t0 = now; emitAt(p, 45, 5); }
+      }
+      if (h.mode === 'gone') {
+        if (now - h.t0 > 900 + h.n * 260) { h.mode = 'blast'; h.pos.set(p.cx, p.H * sy, p.cz); h.vel.set((Math.random() - .5) * 3.4, 8 + Math.random() * 2.5, (Math.random() - .5) * 3.4); h.t0 = now; emitAt(p, 70, 9.5); }
+        else { h.m.visible = false; h.steam.forEach(s => s.material.opacity = 0); return; }
+      }
+      if (h.mode === 'blast') {                                 // 被岩漿噴回空中
+        h.vel.y -= 11 * dt; h.pos.addScaledVector(h.vel, dt); x = h.pos.x; y = h.pos.y; z = h.pos.z; spin = (now - h.t0) / 90; moving = false;
+        if (h.vel.y < 0) { ray.set(tmp.set(x, y + .5, z), down); const hit = ray.intersectObject(p.mesh, false)[0]; const gy = hit ? hit.point.y : -.2; if (y <= gy + .05) { h.mode = 'walk'; h.ph = (Math.acos(-.7) - h.a0) / 6.2832; h.gy = gy; h.prev.set(x, gy, z); y = gy; } }
+      }
+      h.m.visible = true;
+      if (moving) { const dx = x - h.prev.x, dz = z - h.prev.z; if (dx * dx + dz * dz > 1e-8) { const ty = Math.atan2(dx, dz); let d = ty - h.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); h.yaw += d * .2; } h.prev.set(x, y - hop * .42, z); }
+      h.m.position.set(x, y, z); h.m.scale.setScalar(2.1 * scl);
+      if (moving) { h.m.rotation.set(Math.cos(time * 5.2 + h.a0) * .22, h.yaw, 0); const sq = 1 - hop; h.m.userData.body.scale.set(1 + sq * .16 - hop * .05, 1 - sq * .2 + hop * .1, 1 + sq * .16 - hop * .05); }
+      else { h.m.rotation.set(spin * .6, h.yaw, spin); h.m.userData.body.scale.set(1, 1, 1); }
+      h.steam.forEach((s, k) => { const u = (time * .7 + k * .5 + h.a0) % 1; s.position.set(x + Math.sin(u * 6 + k) * .05, y + .55 * scl + u * .75, z); s.material.opacity = (1 - u) * .5 * scl; const sc = .22 + u * .5; s.scale.set(sc, sc, 1); });
     });
     if (!dragging && !reduce) yawT *= .995;
     yaw += (yawT + (sel == null && !reduce ? Math.sin(time * .25) * .1 : 0) - yaw) * .08;
     camTarget.lerp(camTargetGoal, .06); dist += (distGoal - dist) * .06;
     const pt = sel != null ? .13 : .2; pitch += (pt - pitch) * .06;
     camera.position.set(camTarget.x + Math.sin(yaw) * Math.cos(pitch) * dist, camTarget.y + Math.sin(pitch) * dist + .8, camTarget.z + Math.cos(yaw) * Math.cos(pitch) * dist);
+    const sh = reduce ? 0 : .32 * Math.exp(-(now - lastBoom) / 1000 * 2.2) * (now - lastBoom < 2400 ? 1 : 0);   // 噴發震動
+    if (sh > .003) { camOff.set((Math.random() - .5) * sh, (Math.random() - .5) * sh, (Math.random() - .5) * sh); camera.position.add(camOff); }
     camera.lookAt(camTarget);
     stars.rotation.y = time * .004;
     mists.forEach(m => { m.position.x += m.userData.sp * dt; if (m.position.x > 17) m.position.x = -17; });
-    const dp = dustGeo.attributes.position; for (let i = 0; i < DUST; i++) { let y = dp.getY(i) + dt * .25; if (y > 7) y = 0; dp.setY(i, y); dp.setX(i, dp.getX(i) + Math.sin(time * .6 + dustSeed[i]) * dt * .15); } dp.needsUpdate = true;
+    const dp = dustGeo.attributes.position; for (let i = 0; i < DUST; i++) { let yy = dp.getY(i) + dt * .45; if (yy > 7) yy = 0; dp.setY(i, yy); dp.setX(i, dp.getX(i) + Math.sin(time * .6 + dustSeed[i]) * dt * .25); } dp.needsUpdate = true;
     btns.forEach((b, i) => {
-      const p = peaks[i]; const v = tmp.set(p.cx, p.H * p.mesh.scale.y + .3, p.cz).project(camera);
+      const p = peaks[i]; const v = tmp.set(p.cx, p.H * p.mesh.scale.y + 1.1, p.cz).project(camera);
       b.style.left = ((v.x * .5 + .5) * W) + 'px'; b.style.top = Math.max(6, (-v.y * .5 + .5) * Hh - b.offsetHeight - 8) + 'px';
     });
     if (composer) composer.render(); else renderer.render(scene, camera);
@@ -1462,6 +1517,7 @@ function main() {
   new IntersectionObserver(es => es.forEach(en => { visible = en.isIntersecting; if (visible) { if (!started) { started = true; t0 = performance.now(); } start(); } }), { threshold: .2 }).observe(box);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) start(); });
   box.dataset.three = composer ? 'ready-bloom' : 'ready';
+  window.__volc = { select, hikers, peaks };   // 供測試
 }
 main();
 </script>
