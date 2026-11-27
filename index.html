@@ -1217,6 +1217,9 @@ try {
   ({ UnrealBloomPass } = await import('three/addons/postprocessing/UnrealBloomPass.js'));
   ({ OutputPass } = await import('three/addons/postprocessing/OutputPass.js'));
 } catch (e) { EffectComposer = null; }
+// Blender 製作的模型載入器
+let GLTFLoader = null;
+try { ({ GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js')); } catch (e) { GLTFLoader = null; }
 
 function main() {
   const box = document.getElementById('alps'); if (!box) return;
@@ -1316,10 +1319,11 @@ function main() {
     const lake = new THREE.Mesh(new THREE.CircleGeometry(d.cr * .62, 40), lakeMat); lake.rotation.x = -Math.PI / 2; lake.position.y = d.H - d.dep + .03; mesh.add(lake);
     // 岩漿河
     const flowMat = new THREE.MeshBasicMaterial({ map: lavaTex, color: new THREE.Color(2, 1.3, .8), toneMapped: false });
+    const flows = [];
     for (let k = 0; k < 4; k++) {
       const a0 = k * 1.57 + Math.random() * .8, pts = [];
       for (let s = 0; s <= 16; s++) { const f = .985 - s / 16 * .68, ang = a0 + Math.sin(s * .9 + k * 2) * .14, p = surf(d, ang, f); pts.push(new THREE.Vector3(p[0] * 1.012, p[1] + .03, p[2] * 1.012)); }
-      mesh.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, .055, 5, false), flowMat));
+      const fm = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, .055, 5, false), flowMat); mesh.add(fm); flows.push(fm);
     }
     const light = new THREE.PointLight(0xff6a20, 2.2, 11, 1.6); light.position.set(d.cx, d.H + .6, d.cz); scene.add(light);
     // 衝擊波
@@ -1332,7 +1336,7 @@ function main() {
     // 火山灰
     const plume = []; for (let k = 0; k < 12; k++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: smokeTex, transparent: true, opacity: 0, depthWrite: false, fog: false })); scene.add(s); plume.push(s); }
     scene.add(mesh);
-    return { ...d, mesh, flowMat, lakeMat, light, ring, burst: { N, pos, colr, vel, life, pg, cur: 0 }, plume, glow: 0, t0: -1e9, acc: 0 };
+    return { ...d, mesh, flows, blender: false, flowMat, lakeMat, light, ring, burst: { N, pos, colr, vel, life, pg, cur: 0 }, plume, glow: 0, t0: -1e9, acc: 0 };
   });
   function emitAt(p, n, speed) {
     const B = p.burst, top = p.H * p.mesh.scale.y + .05;
@@ -1377,12 +1381,12 @@ function main() {
     const pos = geo.attributes.position, col = new Float32Array(pos.count * 3), dough = new THREE.Color(tint), crisp = new THREE.Color(0xc4802a), c = new THREE.Color();
     for (let i = 0; i < pos.count; i++) { const k = Math.min(1, Math.max(0, (-pos.getY(i) - .01) / .07)); c.copy(dough).lerp(crisp, k); col.set([c.r, c.g, c.b], i * 3); }
     geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    body.add(new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: .45, clearcoat: .6, clearcoatRoughness: .35, emissive: 0x5a3a10, emissiveIntensity: .25 })));
+    const dm = new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: .45, clearcoat: .6, clearcoatRoughness: .35, emissive: 0x5a3a10, emissiveIntensity: .25 })); dm.userData.part = 'dough'; body.add(dm);
     const pm = new THREE.MeshStandardMaterial({ color: 0xeed9ab, roughness: .6 });
-    for (let i = 0; i < 8; i++) { const a = -1.05 + i * .3, p = new THREE.Mesh(new THREE.BoxGeometry(.026, .05, .085), pm); p.position.set(Math.sin(a) * .215, Math.cos(a) * .105 + .03, 0); p.rotation.z = -a * .9; body.add(p); }
+    for (let i = 0; i < 8; i++) { const a = -1.05 + i * .3, p = new THREE.Mesh(new THREE.BoxGeometry(.026, .05, .085), pm); p.position.set(Math.sin(a) * .215, Math.cos(a) * .105 + .03, 0); p.rotation.z = -a * .9; p.userData.part = 'dough'; body.add(p); }
     const eyeM = new THREE.MeshBasicMaterial({ color: 0x2a2119 });
-    [-1, 1].forEach(sx => { const e = new THREE.Mesh(new THREE.SphereGeometry(.017, 10, 8), eyeM); e.position.set(sx * .06, .015, .118); body.add(e); const bl = new THREE.Mesh(new THREE.SphereGeometry(.022, 8, 6), new THREE.MeshBasicMaterial({ color: 0xf4a08a })); bl.scale.z = .3; bl.position.set(sx * .105, -.02, .1); body.add(bl); });
-    const mouth = new THREE.Mesh(new THREE.TorusGeometry(.022, .005, 6, 12, Math.PI), eyeM); mouth.position.set(0, -.005, .122); mouth.rotation.z = Math.PI; body.add(mouth);
+    [-1, 1].forEach(sx => { const e = new THREE.Mesh(new THREE.SphereGeometry(.017, 10, 8), eyeM); e.position.set(sx * .06, .015, .118); e.userData.face = [sx * .06, .62, .003]; body.add(e); const bl = new THREE.Mesh(new THREE.SphereGeometry(.022, 8, 6), new THREE.MeshBasicMaterial({ color: 0xf4a08a })); bl.scale.z = .3; bl.position.set(sx * .105, -.02, .1); bl.userData.face = [sx * .1, .45, .002]; body.add(bl); });
+    const mouth = new THREE.Mesh(new THREE.TorusGeometry(.022, .005, 6, 12, Math.PI), eyeM); mouth.position.set(0, -.005, .122); mouth.rotation.z = Math.PI; mouth.userData.face = [0, .5, .004]; body.add(mouth);
     body.position.y = .1; g.add(body); g.scale.setScalar(2.1); g.userData.body = body; g.traverse(o => { if (o.isMesh) o.castShadow = true; }); return g;
   }
   const steamTex = mk([[0, 'rgba(255,255,255,.7)'], [1, 'rgba(255,255,255,0)']], 64);
@@ -1393,6 +1397,31 @@ function main() {
     return { n, m, steam, pi, ph, dir, a0: n * 1.7, speed: .16 + (n % 3) * .03, prev: new THREE.Vector3(), from: new THREE.Vector3(), pos: new THREE.Vector3(), vel: new THREE.Vector3(), yaw: 0, mode: 'walk', t: 0, t0: 0, spin: 0 };
   });
   const ray = new THREE.Raycaster(), down = new THREE.Vector3(0, -1, 0), tmp = new THREE.Vector3();
+
+  // ---- Blender 模型：精緻火山與鍋貼（載入失敗則沿用程式產生的模型）----
+  if (GLTFLoader) {
+    const loader = new GLTFLoader(), firstMesh = r => { let m = null; r.traverse(o => { if (o.isMesh && !m) m = o; }); return m; };
+    loader.load('models/volcanoes.glb', gl => {
+      peaks.forEach((p, i) => {
+        const o = gl.scene.getObjectByName('V' + i), m = o && firstMesh(o); if (!m) return;
+        p.mesh.geometry.dispose(); p.mesh.geometry = m.geometry; p.mesh.material = m.material;
+        p.mesh.material.emissive.setRGB(1, 1, 1); p.blender = true; p.flows.forEach(f => f.visible = false);
+      });
+      box.dataset.model = 'blender';
+    }, undefined, () => {});
+    loader.load('models/gyoza.glb', gl => {
+      const gm = firstMesh(gl.scene); if (!gm) return;
+      gm.geometry.computeBoundingBox(); const bb = gm.geometry.boundingBox, probe = new THREE.Mesh(gm.geometry), rc = new THREE.Raycaster(), dir = new THREE.Vector3(0, 0, -1);
+      const front = (x, y) => { rc.set(new THREE.Vector3(x, y, 2), dir); const h = rc.intersectObject(probe, false)[0]; return h ? h.point.z : bb.max.z; };
+      hikers.forEach(h => {
+        const body = h.m.userData.body;
+        body.children.filter(c => c.userData.part === 'dough').forEach(c => body.remove(c));
+        const mm = new THREE.Mesh(gm.geometry, gm.material); mm.castShadow = true; body.add(mm);
+        body.children.forEach(c => { const f = c.userData.face; if (!f) return; const y = bb.min.y + (bb.max.y - bb.min.y) * f[1]; c.position.set(f[0], y, front(f[0], y) + f[2]); });
+      });
+      box.dataset.gyoza = 'blender';
+    }, undefined, () => {});
+  }
 
   // ---- 後製：輝光 ----
   let composer = null;
@@ -1450,7 +1479,7 @@ function main() {
       const k = ease(Math.max(0, Math.min(1, rp * 1.5 - i * .25))); p.mesh.scale.set(1, Math.max(.001, k), 1);
       const act = box.dataset.active != null ? +box.dataset.active : -1, on = (i === act || i === sel) ? 1 : 0; p.glow += (on - p.glow) * .12;
       const el = (now - p.t0) / 1000, ei = el >= 0 && el < 8 ? Math.min(1, el / .5) * Math.max(0, 1 - Math.max(0, el - 2.5) / 5.5) : 0, boom = el >= 0 ? Math.exp(-el * 1.8) : 0;
-      p.mesh.material.emissiveIntensity = p.glow * .1 + ei * .12;
+      p.mesh.material.emissiveIntensity = p.blender ? 1.35 + Math.sin(time * 2.2 + i) * .2 + p.glow * .7 + ei * 2.4 : p.glow * .1 + ei * .12;
       const fl = 1.7 + Math.sin(time * 3 + i) * .25 + p.glow * .5 + ei * 1.6; p.flowMat.color.setRGB(fl, fl * .62, fl * .35); p.lakeMat.color.setRGB(fl, fl * .68, fl * .4);
       p.light.intensity = 2.2 + p.glow * 2 + boom * 30 + ei * 7 + Math.sin(time * 5 + i * 2) * .3;
       const top = p.H * k + .05;
