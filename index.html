@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1d1814">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Maison Doré">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>Maison Doré 金鑄鍋貼｜豪奢歐式風鍋貼專賣</title>
 <meta name="description" content="Maison Doré 金鑄鍋貼：以法式工藝與黃金煎脆比例，成就金黃酥脆的極致鍋貼。線上點餐、冷凍禮盒、門市據點。">
 
@@ -1191,6 +1199,12 @@
   // Lucide 若較晚載入，補一次
   window.addEventListener('load', icons);
 })();
+</script>
+<script>
+  // PWA：註冊 Service Worker（僅在 https 或 localhost 有效）
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
 </script>
 <script type="module">
 import * as THREE from 'three';
