@@ -76,7 +76,7 @@
   .hero-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.6s ease; overflow: hidden; }
   .hero-slide.active { opacity: 1; }
   .hero-slide .hero-art, .hero-slide video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.02); }
-  .hero-slide.active .hero-art, .hero-slide.active video { animation: kenburns 9s ease-out forwards; }
+  .hero-slide.active .hero-art, .hero-slide.active video { animation: kenburns 7s ease-out forwards; }
   @keyframes kenburns { from { transform: scale(1.02) translate3d(0,0,0); } to { transform: scale(1.14) translate3d(-1.5%,-1%,0); } }
   #hero-dots button { width: 34px; height: 3px; background: rgba(228,217,189,.3); transition: background .3s, width .3s; }
   #hero-dots button.on { background: #e4d9bd; width: 54px; }
@@ -90,6 +90,8 @@
   @keyframes fabShine { 0%, 55% { left: -60%; } 100% { left: 140%; } }
   @keyframes fabPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(228,217,189,.55); } 50% { box-shadow: 0 0 0 9px rgba(228,217,189,0); } }
   @media (max-width: 480px) { #book-fab { padding: .7rem 1.1rem .7rem .8rem; font-size: .82rem; } #book-fab .fab-sub { display: none; } }
+  .shimmer-text { background: linear-gradient(100deg, #b8a67c 0%, #b8a67c 35%, #fffaf0 50%, #b8a67c 65%, #b8a67c 100%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; animation: textShine 3.8s linear infinite; }
+  @keyframes textShine { from { background-position: 150% 0; } to { background-position: -100% 0; } }
   @keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
   @keyframes toastIn { from { opacity: 0; transform: translateY(-14px) } to { opacity: 1; transform: none } }
 </style>
@@ -151,7 +153,7 @@
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden" aria-label="主視覺">
   <!-- 影片輪播：每張 slide 可在 data-video 填入 mp4 網址（歐洲餐廳內裝、古堡外觀），未填或載入失敗時顯示內建插畫 -->
   <div id="hero-carousel" class="absolute inset-0" aria-roledescription="carousel" aria-label="Maison Doré 場景輪播">
-    <div class="hero-slide active" data-video="videos/castle.mp4,https://videos.pexels.com/video-files/14401360/14401360-hd_1920_1080_24fps.mp4,https://videos.pexels.com/video-files/14401360/14401360-hd_1920_1080_25fps.mp4,https://videos.pexels.com/video-files/14401360/14401360-hd_1920_1080_30fps.mp4,https://videos.pexels.com/video-files/14401360/14401360-uhd_2560_1440_25fps.mp4,https://videos.pexels.com/video-files/14401360/14401360-sd_960_540_25fps.mp4" data-poster="" data-label-en="LE CHÂTEAU" data-label-zh="古堡空拍・霍亨索倫">
+    <div class="hero-slide active" data-rate="1.7" data-video="videos/castle.mp4,https://videos.pexels.com/video-files/16097713/16097713-hd_1920_1080_24fps.mp4,https://videos.pexels.com/video-files/16097713/16097713-hd_1920_1080_25fps.mp4,https://videos.pexels.com/video-files/16097713/16097713-hd_1920_1080_30fps.mp4,https://videos.pexels.com/video-files/16097713/16097713-uhd_2560_1440_25fps.mp4,https://videos.pexels.com/video-files/16097713/16097713-sd_960_540_25fps.mp4" data-poster="" data-label-en="LE CHÂTEAU" data-label-zh="古堡空拍・霍亨索倫">
       <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" class="hero-art" aria-hidden="true">
         <defs><linearGradient id="skyA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b0a1a"/><stop offset=".55" stop-color="#3a1520"/><stop offset="1" stop-color="#b8844a"/></linearGradient>
         <radialGradient id="moonA"><stop offset="0" stop-color="#fff6dc"/><stop offset="1" stop-color="#fff6dc" stop-opacity="0"/></radialGradient></defs>
@@ -172,7 +174,7 @@
         <path d="M0 700 Q400 660 800 690 T1600 680 V900 H0Z" fill="#0d0b0a"/>
       </svg>
     </div>
-    <div class="hero-slide" data-video="videos/salon.mp4,https://videos.pexels.com/video-files/29549593/29549593-hd_1920_1080_24fps.mp4,https://videos.pexels.com/video-files/29549593/29549593-hd_1920_1080_25fps.mp4,https://videos.pexels.com/video-files/29549593/29549593-hd_1920_1080_30fps.mp4,https://videos.pexels.com/video-files/29549593/29549593-uhd_2560_1440_25fps.mp4,https://videos.pexels.com/video-files/29549593/29549593-sd_960_540_25fps.mp4" data-poster="" data-label-en="LA FORTERESSE" data-label-zh="古堡空拍・捷克">
+    <div class="hero-slide" data-rate="1.7" data-video="videos/salon.mp4,https://videos.pexels.com/video-files/4922982/4922982-hd_1920_1080_24fps.mp4,https://videos.pexels.com/video-files/4922982/4922982-hd_1920_1080_25fps.mp4,https://videos.pexels.com/video-files/4922982/4922982-hd_1920_1080_30fps.mp4,https://videos.pexels.com/video-files/4922982/4922982-uhd_2560_1440_25fps.mp4,https://videos.pexels.com/video-files/4922982/4922982-sd_960_540_25fps.mp4" data-poster="" data-label-en="LA FORTERESSE" data-label-zh="古堡空拍・捷克">
       <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" class="hero-art" aria-hidden="true">
         <defs><linearGradient id="wallB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26101a"/><stop offset="1" stop-color="#0c0b0a"/></linearGradient>
         <radialGradient id="glowB"><stop offset="0" stop-color="#f3c777" stop-opacity=".75"/><stop offset="1" stop-color="#f3c777" stop-opacity="0"/></radialGradient></defs>
@@ -209,14 +211,11 @@
   </div>
   <div class="absolute inset-0 bg-gradient-to-b from-ink-900/90 via-ink-900/65 to-ink-900"></div>
   <div class="absolute inset-0 damask opacity-60"></div>
-  <div class="absolute bottom-28 left-6 sm:left-10 z-10 text-left pointer-events-none">
-    <p id="hero-cap-en" class="font-display text-gold-400 tracking-[.4em] text-[11px]"></p>
-    <p id="hero-cap-zh" class="font-tc text-sm text-gold-300/80 tracking-widest mt-1"></p>
-  </div>
   <div id="hero-dots" class="absolute bottom-9 right-6 sm:right-10 z-10 flex gap-3"></div>
   <div class="relative z-10 text-center px-6 pt-24 max-w-4xl">
     <p class="font-display text-gold-400 tracking-[.5em] text-xs sm:text-sm mb-6">ESTABLISHED IN PARIS · TAIPEI</p>
     <h1 class="font-display font-bold text-4xl sm:text-6xl lg:text-7xl leading-tight gold-text">Dorado y Crujiente,<br class="sm:hidden"> el Arte de la Tradición</h1>
+    <p class="font-tc font-bold text-xl sm:text-3xl tracking-[.3em] shimmer-text mt-5">金黃酥脆　傳承手藝的極致美味</p>
     <div class="divider my-8"><i data-lucide="sparkles" class="w-5 h-5"></i></div>
     <p class="font-serif italic text-lg sm:text-2xl text-gold-300/90 mb-10">Where golden crispness meets centuries of craft.</p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
@@ -854,14 +853,13 @@
     const root = document.getElementById('hero-carousel'); if (!root) return;
     const slides = Array.from(root.querySelectorAll('.hero-slide'));
     const dots = document.getElementById('hero-dots');
-    const capEn = document.getElementById('hero-cap-en'), capZh = document.getElementById('hero-cap-zh');
-    let cur = 0, timer = null;
+        let cur = 0, timer = null;
     // 有提供影片網址才建立 <video>；載入失敗就移除，保留插畫
     slides.forEach(sl => {
       const list = (sl.dataset.video || '').split(',').filter(Boolean); if (!list.length) return;
       let src = list.shift();
       const v = document.createElement('video');
-      v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'metadata';
+      v.muted = true; v.loop = true; v.defaultPlaybackRate = v.playbackRate = parseFloat(sl.dataset.rate || '1'); v.playsInline = true; v.preload = 'metadata';
       if (sl.dataset.poster) v.poster = sl.dataset.poster;
       v.src = src; v.addEventListener('error', () => { if (list.length) { v.src = list.shift(); v.load(); } else v.remove(); });
       sl.appendChild(v);
@@ -877,10 +875,9 @@
       slides.forEach((sl, k) => {
         const on = k === cur; sl.classList.toggle('active', on);
         const v = sl.querySelector('video');
-        if (v) { if (on) { v.currentTime = 0; v.play().catch(() => {}); } else v.pause(); }
+        if (v) { if (on) { v.currentTime = 0; v.playbackRate = parseFloat(sl.dataset.rate || '1'); v.play().catch(() => {}); } else v.pause(); }
       });
       Array.from(dots.children).forEach((d, k) => d.classList.toggle('on', k === cur));
-      capEn.textContent = slides[cur].dataset.labelEn; capZh.textContent = slides[cur].dataset.labelZh;
     }
     function start() { clearInterval(timer); timer = setInterval(() => show(cur + 1), 7000); }
     document.addEventListener('visibilitychange', () => { document.hidden ? clearInterval(timer) : start(); });
