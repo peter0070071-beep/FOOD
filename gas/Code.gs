@@ -2,11 +2,11 @@
  * Maison Doré 金鑄鍋貼｜線上訂單 × Google Sheet（Google Apps Script）
  *
  * 功能
- *  - doPost：網站送出訂單 → 驗證、以「菜單」工作表的價格重新計價、寫入「訂單」「訂單明細」、寄通知信
+ *  - doPost：網站送出訂單 → 驗證、以「菜單」工作表的價格重新計價、寫入「訂單」「訂單明細」
  *  - doGet：?action=menu 回傳品項上架狀態與價格；?action=status&no=訂單編號&phone=手機 查詢訂單狀態
  *  - 試算表選單「Maison Doré」：初始化工作表、安裝排程、寄今日報表、測試訂單
- *  - 店員把「狀態」改成 可取餐／配送中／已取消 時，自動寄信通知顧客
- *  - 每晚 22:00 寄送當日營收報表並記錄到「每日報表」
+ *  - 每晚 22:00 將當日營收記錄到「每日報表」
+ *  - 寄信功能（店家通知、顧客確認、狀態通知、報表）預設全部關閉，可在 CFG 開啟
  *
  * 安裝步驟請見 gas/README.md
  */
@@ -17,7 +17,11 @@ const CFG = {
   FREE_SHIP: 1500,           // 宅配滿額免運
   SHIP_FEE: 80,              // 宅配運費
   NOTIFY_EMAIL: '',          // 店家通知信箱；留空 = 部署這支程式的帳號
-  SEND_CUSTOMER_EMAIL: true, // 是否寄確認信給顧客
+  // 寄信開關：目前全部關閉，訂單只記錄在試算表
+  SEND_STORE_EMAIL: false,    // 新訂單通知店家
+  SEND_CUSTOMER_EMAIL: false, // 訂單確認信給顧客
+  SEND_STATUS_EMAIL: false,   // 狀態改為 可取餐／配送中／已取消 時通知顧客
+  SEND_REPORT_EMAIL: false,   // 每日營收報表寄信（報表仍會寫入「每日報表」工作表）
   MAX_ORDERS_PER_PHONE_10MIN: 5,
   REPORT_HOUR: 22,
   STATUSES: ['新訂單', '製作中', '可取餐', '配送中', '已完成', '已取消']
@@ -139,7 +143,7 @@ function createOrder_(b, source) {
   ish.getRange(ish.getLastRow() + 1, 1, lines.length, ITEM_HEAD.length).setValues(lines.map(l => [orderNo, l.id, l.name, l.price, l.qty, l.sum]));
 
   const order = Object.assign({}, data, { orderNo, lines, subtotal, fee, total, createdAt: now, modeText: MODES[data.mode] });
-  try { notifyStore_(order, stores); } catch (err) { console.error('店家通知失敗', err); }
+  if (CFG.SEND_STORE_EMAIL) { try { notifyStore_(order, stores); } catch (err) { console.error('店家通知失敗', err); } }
   if (CFG.SEND_CUSTOMER_EMAIL) { try { mailCustomer_(order); } catch (err) { console.error('顧客確認信失敗', err); } }
 
   return { ok: true, orderNo, subtotal, fee, total, status: CFG.STATUSES[0] };
@@ -179,7 +183,7 @@ function orderHtml_(o, forStore) {
 
 /* 狀態變更通知（需由 installTriggers 安裝為「可安裝的編輯觸發條件」） */
 function onStatusEdit(e) {
-  if (!e || !e.range) return;
+  if (!CFG.SEND_STATUS_EMAIL || !e || !e.range) return;
   const sh = e.range.getSheet();
   if (sh.getName() !== SH.ORDERS || e.range.getColumn() !== COL['狀態'] || e.range.getRow() < 2 || e.range.getNumRows() !== 1) return;
   const status = String(e.value || ''), msgs = { '可取餐': '您的餐點已完成，請至門市取餐。', '配送中': '您的餐點已出發，將盡快送達。', '已取消': '您的訂單已取消，如有疑問請洽門市。' };
@@ -203,7 +207,7 @@ function dailyReport() {
   const top = Object.entries(qty).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([n, q]) => n + ' ×' + q).join('、');
   sheet_(SH.REPORT).appendRow([today, todays.length, revenue, byMode['內用'], byMode['外帶'], byMode['宅配'], top]);
   const to = CFG.NOTIFY_EMAIL || Session.getEffectiveUser().getEmail();
-  if (to) MailApp.sendEmail({ to, name: CFG.BRAND, subject: CFG.BRAND + '｜' + today + ' 營收報表 NT$ ' + revenue.toLocaleString(),
+  if (CFG.SEND_REPORT_EMAIL && to) MailApp.sendEmail({ to, name: CFG.BRAND, subject: CFG.BRAND + '｜' + today + ' 營收報表 NT$ ' + revenue.toLocaleString(),
     htmlBody: '<div style="font-family:sans-serif"><h3>' + today + ' 營收報表</h3><p>訂單數：' + todays.length + '<br>營收：NT$ ' + revenue.toLocaleString() +
       '<br>內用 ' + byMode['內用'] + '／外帶 ' + byMode['外帶'] + '／宅配 ' + byMode['宅配'] + '<br>熱銷：' + (top || '—') + '</p></div>' });
   return { orders: todays.length, revenue };
@@ -214,9 +218,9 @@ function dailyReport() {
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('Maison Doré')
     .addItem('① 初始化工作表', 'setup')
-    .addItem('② 安裝自動通知與每日報表', 'installTriggers')
+    .addItem('② 安裝每日報表排程', 'installTriggers')
     .addSeparator()
-    .addItem('寄送今日營收報表', 'dailyReport')
+    .addItem('產生今日營收報表', 'dailyReport')
     .addItem('建立一筆測試訂單', 'testOrder')
     .addToUi();
 }
@@ -242,14 +246,14 @@ function setup() {
   mk(SH.REPORT, REPORT_HEAD, [100, 70, 90, 60, 60, 60, 320]);
   const blank = ss.getSheetByName('工作表1') || ss.getSheetByName('Sheet1');
   if (blank && blank.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(blank);
-  try { SpreadsheetApp.getUi().alert('完成！已建立：訂單、訂單明細、菜單、門市、每日報表。\n下一步：選單「② 安裝自動通知與每日報表」，再部署為網頁應用程式。'); } catch (e) {}
+  try { SpreadsheetApp.getUi().alert('完成！已建立：訂單、訂單明細、菜單、門市、每日報表。\n下一步：選單「② 安裝每日報表排程」，再部署為網頁應用程式。'); } catch (e) {}
 }
 
 function installTriggers() {
   ScriptApp.getProjectTriggers().forEach(t => { if (['dailyReport', 'onStatusEdit'].includes(t.getHandlerFunction())) ScriptApp.deleteTrigger(t); });
   ScriptApp.newTrigger('dailyReport').timeBased().everyDays(1).atHour(CFG.REPORT_HOUR).inTimezone(CFG.TZ).create();
   ScriptApp.newTrigger('onStatusEdit').forSpreadsheet(SpreadsheetApp.getActive()).onEdit().create();
-  try { SpreadsheetApp.getUi().alert('已安裝：每天 ' + CFG.REPORT_HOUR + ':00 寄送營收報表；狀態改為 可取餐／配送中／已取消 時自動通知顧客。'); } catch (e) {}
+  try { SpreadsheetApp.getUi().alert('已安裝：每天 ' + CFG.REPORT_HOUR + ':00 將營收記錄到「每日報表」。' + (CFG.SEND_STATUS_EMAIL ? '狀態改為 可取餐／配送中／已取消 時會通知顧客。' : '')); } catch (e) {}
 }
 
 function testOrder() {
