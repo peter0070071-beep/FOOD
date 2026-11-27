@@ -948,14 +948,14 @@
 
     if (!ORDER_API) {   // 示範模式
       const no = 'MD' + new Date().toISOString().slice(2, 10).replace(/-/g, '') + '-' + String(Math.floor(1000 + Math.random() * 9000));
-      showOrderDone(no, payload.name + ' 您好，訂單總額 ' + money(cartSubtotal() + calcFee()) + '。' + msgs[mode] + ' 確認信已寄至 ' + payload.email + '（示範）。');
+      showOrderDone(no, payload.name + ' 您好，訂單總額 ' + money(cartSubtotal() + calcFee()) + '。' + msgs[mode] + '（示範）');
       return;
     }
     const btn = $('#co-submit'); btn.disabled = true; btn.textContent = '訂單送出中…';
     try {
       const res = await sendOrder(payload);
       if (res.ok) {
-        showOrderDone(res.orderNo, payload.name + ' 您好，訂單總額 ' + money(res.total) + (res.fee ? '（含運費 ' + money(res.fee) + '）' : '') + '。' + msgs[mode] + ' 確認信已寄至 ' + payload.email + '。');
+        showOrderDone(res.orderNo, payload.name + ' 您好，訂單總額 ' + money(res.total) + (res.fee ? '（含運費 ' + money(res.fee) + '）' : '') + '。' + msgs[mode]);
       } else {
         if (res.fields) Object.entries(res.fields).forEach(([k, m]) => setErr(k, m));
         if (res.soldOut) { res.soldOut.forEach(id => SOLD_OUT.add(id)); markSoldOut(); }
@@ -964,7 +964,7 @@
     } catch (err) {
       // 網路中斷：暫存訂單，恢復連線後自動送出（伺服器以 clientId 避免重複建立）
       queueOrder(payload);
-      showOrderDone('待送出', payload.name + ' 您好，目前網路不穩，訂單已暫存在此裝置，恢復連線後會自動送出，成功後將寄確認信至 ' + payload.email + '。若急需餐點請直接致電門市。');
+      showOrderDone('待送出', payload.name + ' 您好，目前網路不穩，訂單已暫存在此裝置，恢復連線後會自動送出。若急需餐點請直接致電門市。');
     } finally { btn.disabled = false; btn.textContent = '送出訂單'; }
   });
   function showOrderDone(no, msg) {
@@ -1014,7 +1014,7 @@
     } catch (e) { /* 離線時沿用網頁內建菜單 */ }
   }
   if (ORDER_API) {
-    $('#co-note').textContent = '※ 訂單送出後會寄確認信至您的 Email。宅配未滿 NT$ 1,500 運費 NT$ 80。';
+    $('#co-note').textContent = '※ 請記下訂單編號，取餐時出示即可。宅配未滿 NT$ 1,500 運費 NT$ 80。';
     syncMenu(); flushQueue(); window.addEventListener('online', flushQueue);
   }
   $('#ok-close').addEventListener('click', () => { closeModal(modal); window.scrollTo({ top: 0, behavior: 'smooth' }); });
