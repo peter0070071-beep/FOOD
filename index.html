@@ -1323,7 +1323,7 @@ function main() {
   // ---- 每幀 ----
   function frame(now) {
     raf = 0; if (!visible) return;
-    const time = now / 1000, rp = rise();
+    const time = now / 1000, rp = rise(), dt = Math.min(.1, (now - (frame.last || now)) / 1000); frame.last = now;
     // 山升起
     peaks.forEach((p, i) => {
       const k = ease(Math.max(0, Math.min(1, rp * 1.5 - i * .25)));
@@ -1341,14 +1341,14 @@ function main() {
     hikers.forEach(h => {
       const p = peaks[h.pi], boost = now < sprint[h.pi] ? 2.6 : 1, vis = rp > .75;
       h.m.visible = vis; if (!vis) return;
-      h.ph += (reduce ? 0 : .0167 * h.speed * boost) * .16 * 6.28 / 6.28;
-      const t = reduce ? .4 : .5 - .5 * Math.cos(h.ph * 6.28 * 1 + h.a0), ang = h.a0 + h.dir * t * 8.6, r = p.R * .78 * (1 - t) + .06;
+      h.ph += dt * h.speed * .35 * boost;          // 約 18 秒一趟：上山再下山
+      const t = .5 - .5 * Math.cos(h.ph * 6.2832 + h.a0), ang = h.a0 + h.dir * t * 8.6, r = p.R * .78 * (1 - t) + .06;
       const x = p.cx + Math.cos(ang) * r, z = p.cz + Math.sin(ang) * r * .92;
       ray.set(tmp.set(x, p.H + 3, z), down); const hit = ray.intersectObjects([p.mesh, p.snow], false)[0];
       const y = hit ? hit.point.y : h.m.position.y;
       const dx = x - h.prev.x, dz = z - h.prev.z;
       if (dx * dx + dz * dz > 1e-8) { const ty = Math.atan2(dx, dz); let d = ty - h.yaw; d = Math.atan2(Math.sin(d), Math.cos(d)); h.yaw += d * .2; }
-      h.prev.set(x, y, z); const sw = reduce ? 0 : Math.sin(time * 9 * boost + h.a0);
+      h.prev.set(x, y, z); const sw = Math.sin(time * 9 * boost + h.a0);
       h.m.position.set(x, y + Math.abs(sw) * .03, z); h.m.rotation.y = h.yaw;
       h.m.userData.legs[0].rotation.x = sw * .75; h.m.userData.legs[1].rotation.x = -sw * .75; h.m.userData.pole.rotation.x = .35 + sw * .25;
     });
