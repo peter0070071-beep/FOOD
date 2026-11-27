@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maison Doré 金鑄鍋貼｜豪奢歐式風鍋貼專賣</title>
+<meta name="description" content="Maison Doré 金鑄鍋貼：以法式工藝與黃金煎脆比例，成就金黃酥脆的極致鍋貼。線上點餐、冷凍禮盒、門市據點。">
+
+<!-- Fonts: 優雅襯線體 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Noto+Serif+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          gold: { 300: '#e4d9bd', 400: '#d2c29a', 500: '#b8a67c', 600: '#9a8a63', 700: '#756844' },
+          ink: { 900: '#0c0b0a', 800: '#151311', 700: '#1f1b18', 600: '#2a2521' },
+          wine: { 700: '#3a1520', 800: '#26101a' }
+        },
+        fontFamily: {
+          display: ['Cinzel', 'Cormorant Garamond', 'Noto Serif TC', 'serif'],
+          serif: ['Cormorant Garamond', 'Noto Serif TC', 'serif'],
+          tc: ['Noto Serif TC', 'serif']
+        }
+      }
+    }
+  };
+</script>
+<!-- Lucide Icons CDN -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+  body { font-family: 'Noto Serif TC', 'Cormorant Garamond', serif; background: #0c0b0a; color: #ebe5d8; }
+  .gold-text { color: #e4d9bd; }
+  .gold-btn { background: #cdbd94; color: #17120d; transition: background .2s, transform .15s; letter-spacing: .08em; }
+  .gold-btn:hover { background: #e4d9bd; }
+  .gold-btn:active { transform: scale(.97); }
+  .ghost-btn { border: 1px solid rgba(184,166,124,.6); color: #e4d9bd; transition: background .2s, color .2s; }
+  .ghost-btn:hover { background: #b8a67c; color: #1a1208; }
+  .frame { position: relative; border: 1px solid rgba(184,166,124,.28); }
+  .frame::before { content: none; }
+  .divider { display: flex; align-items: center; gap: 14px; justify-content: center; color: #b8a67c; }
+  .divider::before, .divider::after { content: ''; height: 1px; width: 72px; background: linear-gradient(90deg, transparent, #b8a67c); }
+  .divider::after { transform: scaleX(-1); }
+  .damask { background-image: radial-gradient(circle at 25% 25%, rgba(184,166,124,.035) 0 1.5px, transparent 3px), radial-gradient(circle at 75% 75%, rgba(184,166,124,.035) 0 1.5px, transparent 3px); background-size: 38px 38px; }
+  .img-fallback { background: linear-gradient(135deg, #3d0d1a, #16110d 60%, #756844); }
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s ease, transform .8s ease; }
+  .reveal.show { opacity: 1; transform: none; }
+  .tab-active { background: #cdbd94; color: #17120d; border-color: transparent; }
+  input.peer:checked + span { background: #cdbd94; color:#17120d; border-color: transparent; }
+  input.peer:focus-visible + span { outline: 2px solid #e4d9bd; outline-offset: 2px; }
+  .faq-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .35s ease; }
+  .faq-body.open { grid-template-rows: 1fr; }
+  .faq-body > div { overflow: hidden; }
+  #cart-drawer { transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+  ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #0d0a08; } ::-webkit-scrollbar-thumb { background: #756844; border-radius: 8px; }
+  input, select, textarea { background: #16110d; border: 1px solid rgba(184,166,124,.35); color: #efe6d2; border-radius: 6px; padding: .6rem .8rem; width: 100%; outline: none; }
+  input:focus, select:focus, textarea:focus { border-color: #b8a67c; box-shadow: 0 0 0 2px rgba(184,166,124,.25); }
+  .map-grid { background-color: #1b1610; background-image: linear-gradient(rgba(184,166,124,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(184,166,124,.08) 1px, transparent 1px); background-size: 34px 34px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
+  @keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(-14px) } to { opacity: 1; transform: none } }
+</style>
+</head>
+
+<body class="antialiased">
+
+<!-- ===================== Header / Navigation ===================== -->
+<header id="top" class="fixed top-0 inset-x-0 z-40 transition-all duration-300">
+  <div id="nav-bar" class="mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-10 h-16 lg:h-20">
+    <!-- Logo -->
+    <a href="#top" class="flex items-center gap-3 shrink-0" aria-label="Maison Doré 金鑄鍋貼 首頁">
+      <span class="w-10 h-10 rounded-full frame grid place-items-center bg-ink-900"><i data-lucide="crown" class="w-5 h-5 text-gold-500"></i></span>
+      <span class="leading-tight">
+        <span class="block font-display text-lg gold-text tracking-[.18em]">MAISON DORÉ</span>
+        <span class="block text-[11px] tracking-[.5em] text-gold-300/80">金 鑄 鍋 貼</span>
+      </span>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden xl:flex items-center gap-8 text-sm tracking-widest" aria-label="主選單">
+      <a class="hover:text-gold-400 transition" href="#story">品牌故事</a>
+      <a class="hover:text-gold-400 transition" href="#menu">熱門餐點</a>
+      <a class="hover:text-gold-400 transition" href="#order">線上點餐</a>
+      <a class="hover:text-gold-400 transition" href="#gifts">冷凍禮盒</a>
+      <a class="hover:text-gold-400 transition" href="#locations">門市據點</a>
+      <a class="hover:text-gold-400 transition" href="#contact">聯絡我們</a>
+    </nav>
+
+    <!-- Right actions -->
+    <div class="flex items-center gap-3">
+      <button id="cart-open" class="relative w-11 h-11 grid place-items-center rounded-full border border-gold-500/50 hover:bg-gold-500/10 transition" aria-label="開啟購物車">
+        <i data-lucide="shopping-bag" class="w-5 h-5 text-gold-400"></i>
+        <span id="cart-badge" class="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 rounded-full gold-btn text-[11px] font-bold grid place-items-center">0</span>
+      </button>
+      <a href="#order" class="hidden sm:inline-block gold-btn rounded-full px-6 py-2.5 text-sm font-bold tracking-widest">立即點餐</a>
+      <button id="menu-toggle" class="xl:hidden w-11 h-11 grid place-items-center rounded-full border border-gold-500/50" aria-label="開啟選單" aria-expanded="false">
+        <i data-lucide="menu" class="w-5 h-5 text-gold-400"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile nav -->
+  <nav id="mobile-nav" class="hidden xl:hidden bg-ink-900/95 backdrop-blur border-t border-gold-500/20 px-6 py-5" aria-label="行動版選單">
+    <ul class="grid gap-1 text-base tracking-widest">
+      <li><a class="block py-3 border-b border-gold-500/10" href="#story">品牌故事</a></li>
+      <li><a class="block py-3 border-b border-gold-500/10" href="#menu">熱門餐點</a></li>
+      <li><a class="block py-3 border-b border-gold-500/10" href="#order">線上點餐</a></li>
+      <li><a class="block py-3 border-b border-gold-500/10" href="#gifts">冷凍禮盒</a></li>
+      <li><a class="block py-3 border-b border-gold-500/10" href="#locations">門市據點</a></li>
+      <li><a class="block py-3 border-b border-gold-500/10" href="#contact">聯絡我們</a></li>
+    </ul>
+    <a href="#order" class="gold-btn rounded-full px-6 py-3 text-sm font-bold tracking-widest block text-center mt-5">立即點餐</a>
+  </nav>
+</header>
+
+<main>
+<!-- ===================== Hero ===================== -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden" aria-label="主視覺">
+  <img data-img src="https://images.unsplash.com/photo-1789372666362-59f6f77877aa?auto=format&fit=crop&w=2000&q=75" alt="金黃酥脆的鍋貼" class="absolute inset-0 w-full h-full object-cover" fetchpriority="high">
+  <div class="absolute inset-0 bg-gradient-to-b from-ink-900/90 via-ink-900/65 to-ink-900"></div>
+  <div class="absolute inset-0 damask opacity-60"></div>
+  <div class="relative z-10 text-center px-6 pt-24 max-w-4xl">
+    <p class="font-display text-gold-400 tracking-[.5em] text-xs sm:text-sm mb-6">ESTABLISHED IN PARIS · TAIPEI</p>
+    <h1 class="font-tc font-black text-4xl sm:text-6xl lg:text-7xl leading-tight gold-text">金黃酥脆<br class="sm:hidden">傳承手藝的極致美味</h1>
+    <div class="divider my-8"><i data-lucide="sparkles" class="w-5 h-5"></i></div>
+    <p class="font-serif italic text-lg sm:text-2xl text-gold-300/90 mb-10">Where golden crispness meets centuries of craft.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="#order" class="gold-btn rounded-full px-10 py-4 font-bold tracking-widest">線上點餐</a>
+      <a href="#locations" class="ghost-btn rounded-full px-10 py-4 font-bold tracking-widest">探索門市</a>
+    </div>
+  </div>
+  <a href="#story" class="absolute bottom-8 left-1/2 -translate-x-1/2 text-gold-400" style="animation: floaty 2.2s ease-in-out infinite" aria-label="向下捲動"><i data-lucide="chevron-down" class="w-8 h-8"></i></a>
+</section>
+
+<!-- ===================== Brand Story ===================== -->
+<section id="story" class="relative py-24 lg:py-32 px-6 damask">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-14 items-center">
+    <div class="reveal order-2 lg:order-1">
+      <p class="font-display text-gold-500 tracking-[.4em] text-xs mb-3">NOTRE HISTOIRE</p>
+      <h2 class="font-tc text-3xl sm:text-4xl font-bold gold-text mb-6">品牌故事</h2>
+      <p class="leading-loose text-[#cfc8b8] mb-6">Maison Doré 的靈感，來自十九世紀巴黎的宮廷廚房。我們將東方鍋貼的「底酥、面嫩、汁多」，以歐式的精緻工序重新詮釋——每一顆都是一件可以食用的金色工藝品。</p>
+      <ul class="grid gap-4 mb-8">
+        <li class="flex gap-4"><span class="w-10 h-10 shrink-0 rounded-full frame grid place-items-center"><i data-lucide="wheat" class="w-5 h-5 text-gold-500"></i></span><div><h3 class="font-bold text-gold-300">法國在地豬肉</h3><p class="text-sm text-[#a8a190] leading-relaxed">嚴選法國放牧豬肉，肥瘦比例 3:7，肉質鮮甜、不腥不膩。</p></div></li>
+        <li class="flex gap-4"><span class="w-10 h-10 shrink-0 rounded-full frame grid place-items-center"><i data-lucide="hand" class="w-5 h-5 text-gold-500"></i></span><div><h3 class="font-bold text-gold-300">每日現包</h3><p class="text-sm text-[#a8a190] leading-relaxed">清晨手工擀皮、手工摺出 18 摺，絕不隔夜。</p></div></li>
+        <li class="flex gap-4"><span class="w-10 h-10 shrink-0 rounded-full frame grid place-items-center"><i data-lucide="flame" class="w-5 h-5 text-gold-500"></i></span><div><h3 class="font-bold text-gold-300">黃金煎脆比例</h3><p class="text-sm text-[#a8a190] leading-relaxed">以獨門水粉比例煎出薄如蟬翼的金色脆底，咬下即碎。</p></div></li>
+      </ul>
+    </div>
+    <div class="reveal order-1 lg:order-2 relative">
+      <div class="frame p-3"><img data-img src="https://images.unsplash.com/photo-1774989423979-6a7bf5add3f0?auto=format&fit=crop&w=1200&q=75" alt="燈光溫暖的優雅餐廳" class="w-full aspect-[4/5] object-cover"></div>
+      <div class="absolute -bottom-6 -left-4 sm:-left-8 gold-btn rounded px-6 py-4 font-display tracking-widest text-sm">SINCE 1824</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="max-w-6xl mx-auto mt-24 grid grid-cols-1 sm:grid-cols-3 gap-6 reveal">
+    <div class="frame text-center py-10 bg-ink-800/60"><div class="font-display text-5xl gold-text"><span data-count="10000">0</span>+</div><p class="mt-3 tracking-widest text-sm text-[#a8a190]">每日賣出（顆）</p></div>
+    <div class="frame text-center py-10 bg-ink-800/60"><div class="font-display text-5xl gold-text"><span data-count="100">0</span>%</div><p class="mt-3 tracking-widest text-sm text-[#a8a190]">現點現煎</p></div>
+    <div class="frame text-center py-10 bg-ink-800/60"><div class="font-display text-5xl gold-text"><span data-count="200">0</span>年</div><p class="mt-3 tracking-widest text-sm text-[#a8a190]">老店技術傳承</p></div>
+  </div>
+</section>
+
+<!-- ===================== Featured Menu / Online Ordering ===================== -->
+<section id="menu" class="relative py-24 lg:py-32 px-6 bg-gradient-to-b from-ink-900 via-wine-800/40 to-ink-900">
+  <!-- anchor for 線上點餐 -->
+  <span id="order" class="absolute -top-20"></span>
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12 reveal">
+      <p class="font-display text-gold-500 tracking-[.4em] text-xs mb-3">LA CARTE</p>
+      <h2 class="font-tc text-3xl sm:text-4xl font-bold gold-text">熱門餐點・線上點餐</h2>
+      <div class="divider mt-5"><i data-lucide="utensils-crossed" class="w-5 h-5"></i></div>
+    </div>
+
+    <!-- Category tabs -->
+    <div id="menu-tabs" class="flex flex-wrap justify-center gap-3 mb-12" role="tablist" aria-label="菜單分類"></div>
+
+    <!-- Product grid -->
+    <div id="menu-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7" role="tabpanel"></div>
+  </div>
+</section>
+
+<!-- ===================== Gift Boxes ===================== -->
+<section id="gifts" class="relative py-24 lg:py-32 px-6 damask">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-14 reveal">
+      <p class="font-display text-gold-500 tracking-[.4em] text-xs mb-3">COFFRETS CADEAUX</p>
+      <h2 class="font-tc text-3xl sm:text-4xl font-bold gold-text">冷凍禮盒專區</h2>
+      <p class="mt-4 text-[#a8a190]">節慶饋贈、家庭聚餐，把巴黎的金黃帶回家。</p>
+    </div>
+    <div id="gift-grid" class="grid lg:grid-cols-3 gap-8"></div>
+
+    <div class="grid sm:grid-cols-3 gap-6 mt-14 reveal">
+      <div class="text-center p-6 frame bg-ink-800/60"><i data-lucide="snowflake" class="w-8 h-8 mx-auto text-gold-500 mb-3"></i><h3 class="font-bold text-gold-300 mb-2">液態氮急速冷凍</h3><p class="text-sm text-[#a8a190] leading-relaxed">−196°C 瞬間鎖鮮，保留肉汁與麵皮口感。</p></div>
+      <div class="text-center p-6 frame bg-ink-800/60"><i data-lucide="timer" class="w-8 h-8 mx-auto text-gold-500 mb-3"></i><h3 class="font-bold text-gold-300 mb-2">8 分鐘還原門市美味</h3><p class="text-sm text-[#a8a190] leading-relaxed">不需解凍，水煎 8 分鐘即得金黃脆底。</p></div>
+      <div class="text-center p-6 frame bg-ink-800/60"><i data-lucide="truck" class="w-8 h-8 mx-auto text-gold-500 mb-3"></i><h3 class="font-bold text-gold-300 mb-2">全程冷鏈宅配</h3><p class="text-sm text-[#a8a190] leading-relaxed">黑貓冷凍宅配，隔日到貨，附保冰袋。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== Locations & Hours ===================== -->
+<section id="locations" class="relative py-24 lg:py-32 px-6 bg-gradient-to-b from-ink-900 via-ink-800 to-ink-900">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12 reveal">
+      <p class="font-display text-gold-500 tracking-[.4em] text-xs mb-3">NOS MAISONS</p>
+      <h2 class="font-tc text-3xl sm:text-4xl font-bold gold-text">門市據點與營業資訊</h2>
+    </div>
+    <div class="grid lg:grid-cols-5 gap-8">
+      <div id="store-list" class="lg:col-span-2 grid gap-4 content-start"></div>
+      <div class="lg:col-span-3 frame p-3 bg-ink-800/60">
+        <!-- 擬真 Google Maps UI -->
+        <div class="relative map-grid aspect-[4/3] sm:aspect-[16/10] overflow-hidden rounded-sm" aria-label="地圖示意">
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 190 L400 120" stroke="#3a2f20" stroke-width="14" fill="none"/>
+            <path d="M120 0 L170 260" stroke="#3a2f20" stroke-width="12" fill="none"/>
+            <path d="M0 60 C120 40 240 90 400 40" stroke="#4a3b27" stroke-width="8" fill="none"/>
+            <path d="M260 0 L300 260" stroke="#4a3b27" stroke-width="8" fill="none"/>
+            <rect x="300" y="150" width="70" height="50" fill="#1f2a1c" opacity=".7"/>
+            <circle cx="60" cy="110" r="26" fill="#1c2630" opacity=".8"/>
+          </svg>
+          <div class="absolute top-3 left-3 right-3 sm:right-auto sm:w-72 bg-ink-900/90 border border-gold-500/30 rounded px-3 py-2 flex items-center gap-2 text-sm"><i data-lucide="search" class="w-4 h-4 text-gold-500"></i><span id="map-search" class="truncate">Maison Doré 金鑄鍋貼</span></div>
+          <div id="map-pin" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full transition-all duration-500 text-center">
+            <div class="bg-ink-900 border border-gold-500 rounded px-3 py-1 text-xs text-gold-300 mb-1 whitespace-nowrap shadow-lg" id="map-label">旗艦店</div>
+            <i data-lucide="map-pin" class="w-10 h-10 text-red-500 fill-red-500/30 mx-auto" style="animation: floaty 1.8s ease-in-out infinite"></i>
+          </div>
+          <div class="absolute bottom-3 right-3 flex flex-col gap-1"><span class="w-8 h-8 grid place-items-center bg-ink-900/90 border border-gold-500/30 rounded text-gold-400">+</span><span class="w-8 h-8 grid place-items-center bg-ink-900/90 border border-gold-500/30 rounded text-gold-400">−</span></div>
+          <a id="map-link" href="#" target="_blank" rel="noopener" class="absolute bottom-3 left-3 bg-ink-900/90 border border-gold-500/30 rounded px-3 py-1.5 text-xs text-gold-300 hover:bg-gold-500 hover:text-ink-900 transition flex items-center gap-1"><i data-lucide="external-link" class="w-3 h-3"></i> 在 Google 地圖開啟</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section id="faq" class="py-24 lg:py-28 px-6 damask">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-12 reveal">
+      <p class="font-display text-gold-500 tracking-[.4em] text-xs mb-3">QUESTIONS</p>
+      <h2 class="font-tc text-3xl sm:text-4xl font-bold gold-text">常見問題</h2>
+    </div>
+    <div id="faq-list" class="grid gap-3"></div>
+  </div>
+</section>
+</main>
+
+<!-- ===================== Footer ===================== -->
+<footer id="contact" class="bg-ink-900 border-t border-gold-500/30 pt-16 pb-8 px-6">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
+    <div>
+      <div class="flex items-center gap-3 mb-4"><span class="w-10 h-10 rounded-full frame grid place-items-center"><i data-lucide="crown" class="w-5 h-5 text-gold-500"></i></span><span class="font-display text-lg gold-text tracking-[.18em]">MAISON DORÉ</span></div>
+      <p class="text-sm text-[#a8a190] leading-relaxed mb-5">金黃酥脆，傳承手藝的極致美味。<br>客服信箱：hello@maisondore.example<br>客服專線：02-1234-5678（10:00–20:00）</p>
+      <div class="flex gap-3">
+        <a href="#" aria-label="Instagram" class="w-10 h-10 grid place-items-center rounded-full border border-gold-500/40 hover:bg-gold-500 hover:text-ink-900 transition text-gold-400"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+        <a href="#" aria-label="Facebook" class="w-10 h-10 grid place-items-center rounded-full border border-gold-500/40 hover:bg-gold-500 hover:text-ink-900 transition text-gold-400"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+        <a href="#" aria-label="LINE" class="w-10 h-10 grid place-items-center rounded-full border border-gold-500/40 hover:bg-gold-500 hover:text-ink-900 transition text-gold-400"><i data-lucide="message-circle" class="w-4 h-4"></i></a>
+      </div>
+    </div>
+    <div>
+      <h3 class="font-bold text-gold-300 tracking-widest mb-4">快速連結</h3>
+      <ul class="grid gap-2 text-sm text-[#a8a190]">
+        <li><a class="hover:text-gold-400" href="#story">品牌故事</a></li>
+        <li><a class="hover:text-gold-400" href="#order">線上點餐</a></li>
+        <li><a class="hover:text-gold-400" href="#gifts">冷凍禮盒</a></li>
+        <li><a class="hover:text-gold-400" href="#locations">門市據點</a></li>
+        <li><a class="hover:text-gold-400" href="#faq">常見問題</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="font-bold text-gold-300 tracking-widest mb-4">訂閱電子報</h3>
+      <p class="text-sm text-[#a8a190] mb-4">新品與節慶禮盒優先通知，首次訂閱贈 $50 折價券。</p>
+      <form id="newsletter-form" class="flex gap-2" novalidate>
+        <label for="nl-email" class="sr-only">電子郵件</label>
+        <input id="nl-email" type="email" placeholder="your@email.com" required>
+        <button class="gold-btn rounded px-5 font-bold shrink-0" type="submit">訂閱</button>
+      </form>
+      <p id="nl-msg" class="text-xs mt-2 h-4"></p>
+    </div>
+  </div>
+  <div class="max-w-6xl mx-auto mt-12 pt-6 border-t border-gold-500/15 flex flex-col sm:flex-row gap-3 justify-between text-xs text-[#8d8472]">
+    <p>© <span id="year"></span> Maison Doré 金鑄鍋貼. All rights reserved.（此為示範網站，品牌與資訊為虛構）</p>
+    <div class="flex gap-5"><a href="#" id="privacy-link" class="hover:text-gold-400">隱私權政策</a><a href="#" id="terms-link" class="hover:text-gold-400">服務條款</a></div>
+  </div>
+</footer>
+
+<!-- ===================== Cart Drawer ===================== -->
+<div id="cart-overlay" class="fixed inset-0 bg-black/70 z-50 hidden" aria-hidden="true"></div>
+<aside id="cart-drawer" class="fixed top-0 right-0 h-full w-full sm:w-[420px] z-50 bg-ink-800 border-l border-gold-500/40 flex flex-col translate-x-full" role="dialog" aria-modal="true" aria-label="購物車" aria-hidden="true">
+  <div class="flex items-center justify-between px-6 py-5 border-b border-gold-500/25">
+    <h2 class="font-tc text-xl gold-text font-bold flex items-center gap-2"><i data-lucide="shopping-bag" class="w-5 h-5"></i> 購物車</h2>
+    <button id="cart-close" class="w-9 h-9 grid place-items-center rounded-full hover:bg-gold-500/15" aria-label="關閉購物車"><i data-lucide="x" class="w-5 h-5 text-gold-400"></i></button>
+  </div>
+  <div id="cart-items" class="flex-1 overflow-y-auto px-6 py-4 grid gap-4 content-start"></div>
+  <div class="border-t border-gold-500/25 px-6 py-5 bg-ink-900/60">
+    <div class="flex justify-between text-sm text-[#a8a190] mb-1"><span>小計</span><span id="cart-subtotal">NT$ 0</span></div>
+    <div class="flex justify-between text-lg font-bold mb-4"><span>總金額</span><span id="cart-total" class="gold-text">NT$ 0</span></div>
+    <button id="checkout-btn" class="gold-btn w-full rounded-full py-3.5 font-bold tracking-widest disabled:opacity-40 disabled:cursor-not-allowed">前往結帳</button>
+  </div>
+</aside>
+
+<!-- ===================== Checkout Modal ===================== -->
+<div id="checkout-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/80" role="dialog" aria-modal="true" aria-label="訂單確認">
+  <div class="frame bg-ink-800 w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-sm">
+    <!-- Step 1: form -->
+    <form id="checkout-form" class="p-6 sm:p-8" novalidate>
+      <div class="flex justify-between items-start mb-6">
+        <h2 class="font-tc text-2xl gold-text font-bold">訂單確認</h2>
+        <button type="button" id="checkout-close" class="w-9 h-9 grid place-items-center rounded-full hover:bg-gold-500/15" aria-label="關閉"><i data-lucide="x" class="w-5 h-5 text-gold-400"></i></button>
+      </div>
+
+      <fieldset class="mb-6">
+        <legend class="text-sm text-gold-300 mb-3 tracking-widest">用餐方式</legend>
+        <div class="grid grid-cols-3 gap-3" id="mode-group">
+          <label class="cursor-pointer"><input type="radio" name="mode" value="dinein" class="sr-only peer" checked><span class="border border-gold-500/40 rounded py-3 flex flex-col items-center gap-1 text-sm"><i data-lucide="armchair" class="w-5 h-5"></i>內用</span></label>
+          <label class="cursor-pointer"><input type="radio" name="mode" value="takeout" class="sr-only peer"><span class="border border-gold-500/40 rounded py-3 flex flex-col items-center gap-1 text-sm"><i data-lucide="shopping-bag" class="w-5 h-5"></i>外帶</span></label>
+          <label class="cursor-pointer"><input type="radio" name="mode" value="delivery" class="sr-only peer"><span class="border border-gold-500/40 rounded py-3 flex flex-col items-center gap-1 text-sm"><i data-lucide="truck" class="w-5 h-5"></i>宅配</span></label>
+        </div>
+      </fieldset>
+
+      <div class="grid sm:grid-cols-2 gap-4 mb-4">
+        <div><label for="f-name" class="block text-sm mb-1 text-[#a8a190]">姓名 *</label><input id="f-name" name="name" type="text" required autocomplete="name"><p class="err text-xs text-red-400 mt-1 h-4" data-for="name"></p></div>
+        <div><label for="f-phone" class="block text-sm mb-1 text-[#a8a190]">手機 *</label><input id="f-phone" name="phone" type="tel" inputmode="tel" placeholder="0912345678" required autocomplete="tel"><p class="err text-xs text-red-400 mt-1 h-4" data-for="phone"></p></div>
+      </div>
+      <div class="mb-4"><label for="f-email" class="block text-sm mb-1 text-[#a8a190]">Email *</label><input id="f-email" name="email" type="email" required autocomplete="email"><p class="err text-xs text-red-400 mt-1 h-4" data-for="email"></p></div>
+
+      <div id="store-field" class="mb-4"><label for="f-store" class="block text-sm mb-1 text-[#a8a190]">取餐／用餐門市 *</label><select id="f-store" name="store"></select></div>
+      <div id="addr-field" class="mb-4 hidden"><label for="f-addr" class="block text-sm mb-1 text-[#a8a190]">宅配地址 *</label><input id="f-addr" name="address" type="text" autocomplete="street-address"><p class="err text-xs text-red-400 mt-1 h-4" data-for="address"></p></div>
+      <div class="mb-6"><label for="f-note" class="block text-sm mb-1 text-[#a8a190]">備註</label><textarea id="f-note" name="note" rows="2" placeholder="例：不加辣、餐具需求…"></textarea></div>
+
+      <div class="border-t border-gold-500/25 pt-5 mb-6 text-sm">
+        <div id="co-lines" class="grid gap-1 mb-3 text-[#cfc5ad]"></div>
+        <div class="flex justify-between"><span>小計</span><span id="co-sub"></span></div>
+        <div class="flex justify-between"><span>運費</span><span id="co-fee"></span></div>
+        <div class="flex justify-between text-lg font-bold mt-2"><span>應付總額</span><span id="co-total" class="gold-text"></span></div>
+        <p class="text-xs text-[#8d8472] mt-2">※ 示範網站：不會產生實際扣款或訂單。宅配未滿 NT$ 1,500 運費 NT$ 80。</p>
+      </div>
+      <button type="submit" class="gold-btn w-full rounded-full py-3.5 font-bold tracking-widest">送出訂單</button>
+    </form>
+
+    <!-- Step 2: success -->
+    <div id="checkout-success" class="hidden p-10 text-center">
+      <div class="w-20 h-20 mx-auto rounded-full gold-btn grid place-items-center mb-6"><i data-lucide="check" class="w-10 h-10"></i></div>
+      <h2 class="font-tc text-3xl gold-text font-bold mb-3">訂單已建立</h2>
+      <p class="text-[#a8a190] mb-2">訂單編號 <span id="ok-no" class="font-display text-gold-300 tracking-widest"></span></p>
+      <p id="ok-msg" class="text-[#cfc5ad] leading-relaxed mb-8"></p>
+      <button id="ok-close" class="gold-btn rounded-full px-10 py-3 font-bold tracking-widest">回到首頁</button>
+    </div>
+  </div>
+</div>
+
+<!-- Policy modal -->
+<div id="policy-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/80" role="dialog" aria-modal="true">
+  <div class="frame bg-ink-800 max-w-lg w-full p-8 rounded-sm">
+    <h2 id="policy-title" class="font-tc text-2xl gold-text font-bold mb-4"></h2>
+    <p id="policy-body" class="text-sm text-[#cfc5ad] leading-loose mb-6"></p>
+    <button id="policy-close" class="ghost-btn rounded-full px-8 py-2.5 text-sm font-bold">我知道了</button>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-wrap" class="fixed top-24 right-4 left-4 sm:left-auto sm:w-80 z-[70] grid gap-2 pointer-events-none" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ================= 資料 ================= */
+  const IMG = {
+    hero:   'https://images.unsplash.com/photo-1789372666362-59f6f77877aa?auto=format&fit=crop&w=900&q=75',  // 黑色鑄鐵鍋中金黃煎餃
+    g1:     'https://images.unsplash.com/photo-1768326119773-05cae29f4106?auto=format&fit=crop&w=900&q=75',  // 香蕉葉上的金黃煎餃
+    g2:     'https://images.unsplash.com/photo-1638502521795-89107ac5e246?auto=format&fit=crop&w=900&q=75',  // 黑盤三顆餃子
+    g3:     'https://images.unsplash.com/photo-1768046308289-469b32eeec5c?auto=format&fit=crop&w=900&q=75',  // 煎餃佐沾醬
+    g4:     'https://images.unsplash.com/photo-1783636859089-089e7c5a8423?auto=format&fit=crop&w=900&q=75',  // 長方盤煎餃
+    g5:     'https://images.unsplash.com/photo-1769610712810-ec91babfccd3?auto=format&fit=crop&w=900&q=75',  // 鍋中煎餃
+    d1:     'https://images.unsplash.com/photo-1722634765542-0eb8e8d8c11d?auto=format&fit=crop&w=900&q=75',  // 竹籃餃子
+    d2:     'https://images.unsplash.com/photo-1716834092803-08c8dca5226f?auto=format&fit=crop&w=900&q=75',  // 碗裝餃子
+    d3:     'https://images.unsplash.com/photo-1781332147547-1f0edb2a78a4?auto=format&fit=crop&w=900&q=75',  // 酥炸餛飩
+    d4:     'https://images.unsplash.com/photo-1675774644393-7bcfa424dec7?auto=format&fit=crop&w=900&q=75',  // 餐桌上的盤餐與筷子
+    soup1:  'https://images.unsplash.com/photo-1584003397078-45ef96d6174d?auto=format&fit=crop&w=900&q=75',  // 白瓷碗肉菜湯
+    soup2:  'https://images.unsplash.com/photo-1625916231024-11d21e549174?auto=format&fit=crop&w=900&q=75',  // 白瓷碗湯
+    drink1: 'https://images.unsplash.com/photo-1681732647360-7d3fe656b11d?auto=format&fit=crop&w=900&q=75',  // 杯中飲品
+    drink2: 'https://images.unsplash.com/photo-1617641353052-577cb0165766?auto=format&fit=crop&w=900&q=75',  // 玻璃杯與玻璃瓶
+    side1:  'https://images.unsplash.com/photo-1679735107918-15112296e28d?auto=format&fit=crop&w=900&q=75',  // 小黃瓜洋蔥
+    side2:  'https://images.unsplash.com/photo-1736631879709-ee5341d7d31c?auto=format&fit=crop&w=900&q=75',  // 餐桌上多碗菜與筷子
+    side3:  'https://images.unsplash.com/photo-1599448191905-7bedab8ced59?auto=format&fit=crop&w=900&q=75',  // 切片小黃瓜
+    gift1:  'https://images.unsplash.com/photo-1759563871375-d5b140f6646e?auto=format&fit=crop&w=900&q=75',  // 白色禮盒、緞帶與封蠟
+    gift2:  'https://images.unsplash.com/photo-1674620213535-9b2a2553ef40?auto=format&fit=crop&w=900&q=75',  // 兩個黑白禮盒
+    family: 'https://images.unsplash.com/photo-1789372666324-0323e1c80599?auto=format&fit=crop&w=900&q=75',  // 兩大鍋煎餃（家庭組）
+    story:  'https://images.unsplash.com/photo-1774989423979-6a7bf5add3f0?auto=format&fit=crop&w=900&q=75'   // 溫暖燈光的優雅餐廳
+  };
+
+  const CATEGORIES = [
+    { id: 'signature', label: '招牌鍋貼' },
+    { id: 'dumpling',  label: '精選水餃' },
+    { id: 'soup',      label: '湯品／飲料' },
+    { id: 'side',      label: '經典小菜' }
+  ];
+
+  const PRODUCTS = [
+    { id: 'p01', cat: 'signature', name: '黃金巴黎鍋貼（8 顆）', desc: '招牌鮮肉餡，薄脆金底，一咬湧出湯汁。', price: 160, tags: ['人氣', '爆汁'], spicy: 0, img: IMG.g1 },
+    { id: 'p02', cat: 'signature', name: '松露牛肝菌鍋貼（6 顆）', desc: '黑松露與牛肝菌入餡，香氣奢華。', price: 260, tags: ['主廚推薦'], spicy: 0, img: IMG.g2 },
+    { id: 'p03', cat: 'signature', name: '普羅旺斯香草鍋貼（8 顆）', desc: '迷迭香、百里香與豬肉的清爽組合。', price: 190, tags: ['新品'], spicy: 0, img: IMG.g3 },
+    { id: 'p04', cat: 'signature', name: '紅酒焦糖洋蔥牛肉鍋貼（6 顆）', desc: '紅酒燉牛肉與慢炒洋蔥，濃郁回甘。', price: 220, tags: ['爆汁'], spicy: 0, img: IMG.g4 },
+    { id: 'p05', cat: 'signature', name: '凡爾賽辣味鍋貼（8 顆）', desc: '川椒與波本辣醬調味，辣得優雅。', price: 180, tags: ['人氣'], spicy: 2, img: IMG.g5 },
+    { id: 'p06', cat: 'dumpling',  name: '宮廷白菜豬肉水餃（10 顆）', desc: '手擀薄皮，大白菜清甜多汁。', price: 150, tags: ['人氣'], spicy: 0, img: IMG.d1 },
+    { id: 'p07', cat: 'dumpling',  name: '龍蝦奶油水餃（8 顆）', desc: '整隻波士頓龍蝦拌入法式奶油。', price: 280, tags: ['主廚推薦', '爆汁'], spicy: 0, img: IMG.d2 },
+    { id: 'p08', cat: 'dumpling',  name: '紅油抄手（8 顆）', desc: '手工紅油，花椒微麻，層次分明。', price: 170, tags: ['微辣'], spicy: 1, img: IMG.d3 },
+    { id: 'p09', cat: 'dumpling',  name: '三色蔬食水餃（10 顆）', desc: '菠菜、胡蘿蔔、南瓜，全素可食。', price: 160, tags: ['蔬食'], spicy: 0, img: IMG.d4 },
+    { id: 'p10', cat: 'soup',      name: '勃根地酸辣湯', desc: '以紅酒醋提鮮，酸辣開胃。', price: 90, tags: ['人氣', '微辣'], spicy: 1, img: IMG.soup1 },
+    { id: 'p11', cat: 'soup',      name: '松露玉米濃湯', desc: '絲滑濃稠，松露油點綴。', price: 110, tags: ['新品'], spicy: 0, img: IMG.soup2 },
+    { id: 'p12', cat: 'soup',      name: '玫瑰荔枝氣泡飲', desc: '玫瑰花瓣與荔枝，氣泡輕盈。', price: 100, tags: ['人氣'], spicy: 0, img: IMG.drink1 },
+    { id: 'p13', cat: 'soup',      name: '伯爵茶拿鐵', desc: '伯爵茶香與鮮奶的優雅融合。', price: 95, tags: [], spicy: 0, img: IMG.drink2 },
+    { id: 'p14', cat: 'side',      name: '蒜香拍黃瓜', desc: '蒜香脆爽，切片微漬。', price: 80, tags: ['人氣'], spicy: 0, img: IMG.side3 },
+    { id: 'p15', cat: 'side',      name: '醉香滷味拼盤', desc: '紹興酒滷製，豆干、海帶、滷蛋。', price: 120, tags: [], spicy: 0, img: IMG.side2 },
+    { id: 'p16', cat: 'side',      name: '涼拌小黃瓜洋蔥', desc: '洋蔥絲與小黃瓜以黑醋微漬，清爽解膩。', price: 80, tags: ['清爽'], spicy: 0, img: IMG.side1 }
+  ];
+
+  const GIFTS = [
+    { id: 'g01', name: '普羅旺斯薰衣草鍋貼禮盒（50 入）', desc: '薰衣草蜂蜜豬肉餡，附手工紫色絲帶與金色燙印禮盒。', price: 1280, tags: ['熱銷', '節慶限定'], img: IMG.gift1, badge: 'Best Seller' },
+    { id: 'g02', name: '家庭號經典鍋貼（80 入）', desc: '招牌鮮肉與白菜口味各半，全家週末聚餐首選。', price: 1680, tags: ['家庭組'], img: IMG.family, badge: 'Famille' },
+    { id: 'g03', name: '皇家饗宴綜合禮盒（40 入）', desc: '松露、龍蝦、紅酒牛肉三種奢華口味，送禮體面。', price: 1980, tags: ['伴手禮', '限量'], img: IMG.gift2, badge: 'Royal' }
+  ];
+
+  const STORES = [
+    { id: 's1', name: '旗艦店・大安', addr: '台北市大安區忠孝東路四段 100 號 1F', tel: '02-2771-0001', hours: [['週一至週五', '11:00 – 21:30'], ['週六、週日', '10:30 – 22:00']], pin: ['50%', '48%'] },
+    { id: 's2', name: '信義店', addr: '台北市信義區松高路 19 號 B1', tel: '02-2723-0002', hours: [['週日至週四', '11:00 – 21:30'], ['週五、週六', '11:00 – 22:30']], pin: ['66%', '40%'] },
+    { id: 's3', name: '南港店', addr: '台北市南港區經貿二路 188 號 1F', tel: '02-2655-0003', hours: [['每日', '11:00 – 21:00']], pin: ['34%', '58%'] }
+  ];
+
+  const FAQS = [
+    { q: '如何線上點餐？', a: '於「熱門餐點」挑選餐點並加入購物車，點選「前往結帳」，選擇內用、外帶或宅配並填寫聯絡資訊即可送出訂單。' },
+    { q: '外帶或內用需要預約嗎？', a: '一般時段不需預約。6 人以上團體建議致電門市預約座位。' },
+    { q: '冷凍禮盒如何保存與烹煮？', a: '收到後請立即放入 −18°C 以下冷凍保存，可存放 6 個月。烹煮時不需解凍，平底鍋倒入水煎 8 分鐘即可。' },
+    { q: '外送有哪些合作平台？', a: '目前與 Uber Eats、foodpanda 合作，各門市外送範圍與運費依平台顯示為準。自家宅配滿 NT$ 1,500 免運。' },
+    { q: '可以修改或取消訂單嗎？', a: '訂單送出後 10 分鐘內可致電門市修改或取消；餐點開始製作後恕無法取消。' },
+    { q: '有提供素食選項嗎？', a: '有。「三色蔬食水餃」為全素，可於菜單以「蔬食」標籤辨識。' }
+  ];
+
+  /* ================= 工具 ================= */
+  const $ = (s, el) => (el || document).querySelector(s);
+  const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+  const money = n => 'NT$ ' + n.toLocaleString('en-US');
+  const findItem = id => PRODUCTS.find(p => p.id === id) || GIFTS.find(g => g.id === id);
+  function icons() { if (window.lucide) window.lucide.createIcons(); }
+  // 圖片載入失敗時以金色漸層替代
+  function bindImg(root) {
+    $$('img[data-img]', root).forEach(img => {
+      if (img.dataset.bound) return; img.dataset.bound = '1';
+      img.addEventListener('error', () => { img.removeAttribute('src'); img.classList.add('img-fallback'); }, { once: true });
+    });
+  }
+
+  /* ================= 導覽列 ================= */
+  const navBar = $('#nav-bar'), header = $('#top');
+  function onScroll() {
+    const s = window.scrollY > 40;
+    header.classList.toggle('bg-ink-900/90', s);
+    header.classList.toggle('backdrop-blur', s);
+    header.classList.toggle('shadow-lg', s);
+    header.classList.toggle('border-b', s);
+    header.classList.toggle('border-gold-500/25', s);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  const mToggle = $('#menu-toggle'), mNav = $('#mobile-nav');
+  mToggle.addEventListener('click', () => {
+    const open = mNav.classList.toggle('hidden') === false;
+    mToggle.setAttribute('aria-expanded', String(open));
+  });
+  $$('a', mNav).forEach(a => a.addEventListener('click', () => { mNav.classList.add('hidden'); mToggle.setAttribute('aria-expanded', 'false'); }));
+  // 錨點捲動補償固定導覽列
+  document.documentElement.style.scrollPaddingTop = '80px';
+
+  /* ================= Toast ================= */
+  function toast(msg, type) {
+    const el = document.createElement('div');
+    el.className = 'pointer-events-auto flex items-center gap-3 bg-ink-800 border border-gold-500/60 rounded px-4 py-3 shadow-2xl text-sm';
+    el.style.animation = 'toastIn .3s ease';
+    const ic = document.createElement('i'); ic.setAttribute('data-lucide', type === 'error' ? 'alert-circle' : 'check-circle-2'); ic.className = 'w-5 h-5 shrink-0 ' + (type === 'error' ? 'text-red-400' : 'text-gold-500');
+    const tx = document.createElement('span'); tx.textContent = msg;
+    el.append(ic, tx); $('#toast-wrap').appendChild(el); icons();
+    setTimeout(() => { el.style.transition = 'opacity .3s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 2600);
+  }
+
+  /* ================= 菜單 ================= */
+  let activeCat = CATEGORIES[0].id;
+  function tagHtml(t) { return '<span class="text-[11px] px-2 py-0.5 rounded-full border border-gold-500/50 text-gold-300 bg-gold-500/10">' + t + '</span>'; }
+  function spicyHtml(n) { return n ? '<span class="text-[11px] px-2 py-0.5 rounded-full bg-red-900/60 text-red-300 border border-red-500/40">' + '🌶'.repeat(n) + (n === 1 ? ' 微辣' : ' 中辣') + '</span>' : ''; }
+
+  function renderTabs() {
+    $('#menu-tabs').innerHTML = CATEGORIES.map(c =>
+      '<button role="tab" aria-selected="' + (c.id === activeCat) + '" data-cat="' + c.id + '" class="px-6 py-2.5 rounded-full border border-gold-500/50 text-sm tracking-widest transition hover:bg-gold-500/10 ' + (c.id === activeCat ? 'tab-active' : '') + '">' + c.label + '</button>').join('');
+  }
+  function renderMenu() {
+    const grid = $('#menu-grid');
+    grid.style.opacity = '0';
+    setTimeout(() => {
+      grid.innerHTML = PRODUCTS.filter(p => p.cat === activeCat).map(p =>
+        '<article class="frame bg-ink-800/70 flex flex-col group">' +
+          '<div class="overflow-hidden aspect-[4/3] img-fallback"><img data-img loading="lazy" src="' + p.img + '" alt="' + p.name + '" class="w-full h-full object-cover transition duration-700 group-hover:scale-110"></div>' +
+          '<div class="p-5 flex flex-col flex-1">' +
+            '<div class="flex flex-wrap gap-1.5 mb-3">' + p.tags.map(tagHtml).join('') + spicyHtml(p.spicy) + '</div>' +
+            '<h3 class="font-bold text-lg text-gold-300 mb-2">' + p.name + '</h3>' +
+            '<p class="text-sm text-[#a8a190] leading-relaxed mb-5 flex-1">' + p.desc + '</p>' +
+            '<div class="flex items-center justify-between"><span class="font-display text-2xl gold-text">' + money(p.price) + '</span>' +
+            '<button data-add="' + p.id + '" class="gold-btn rounded-full px-5 py-2 text-sm font-bold flex items-center gap-1.5"><i data-lucide="plus" class="w-4 h-4"></i>加入購物車</button></div>' +
+          '</div></article>').join('');
+      bindImg(grid); icons();
+      grid.style.transition = 'opacity .35s'; grid.style.opacity = '1';
+    }, 160);
+  }
+  $('#menu-tabs').addEventListener('click', e => {
+    const b = e.target.closest('[data-cat]'); if (!b || b.dataset.cat === activeCat) return;
+    activeCat = b.dataset.cat; renderTabs(); renderMenu();
+  });
+
+  /* ================= 禮盒 ================= */
+  $('#gift-grid').innerHTML = GIFTS.map(g =>
+    '<article class="reveal frame bg-ink-800/70 flex flex-col group">' +
+      '<div class="relative overflow-hidden aspect-[4/3] img-fallback"><img data-img loading="lazy" src="' + g.img + '" alt="' + g.name + '" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">' +
+      '<span class="absolute top-3 left-3 font-display text-xs tracking-widest gold-btn px-3 py-1 rounded-sm">' + g.badge + '</span></div>' +
+      '<div class="p-6 flex flex-col flex-1">' +
+        '<div class="flex flex-wrap gap-1.5 mb-3">' + g.tags.map(tagHtml).join('') + '</div>' +
+        '<h3 class="font-bold text-xl text-gold-300 mb-2">' + g.name + '</h3>' +
+        '<p class="text-sm text-[#a8a190] leading-relaxed mb-6 flex-1">' + g.desc + '</p>' +
+        '<div class="flex items-center justify-between gap-3"><span class="font-display text-3xl gold-text">' + money(g.price) + '</span>' +
+        '<div class="flex gap-2"><button data-add="' + g.id + '" class="ghost-btn rounded-full px-4 py-2 text-sm font-bold" aria-label="加入購物車">加入購物車</button>' +
+        '<button data-buy="' + g.id + '" class="gold-btn rounded-full px-4 py-2 text-sm font-bold">直接購買</button></div></div>' +
+      '</div></article>').join('');
+
+  /* ================= 門市 ================= */
+  let activeStore = STORES[0].id;
+  function renderStores() {
+    $('#store-list').innerHTML = STORES.map(s => {
+      const on = s.id === activeStore;
+      return '<button data-store="' + s.id + '" class="text-left frame p-5 transition ' + (on ? 'bg-gold-500/10 border-gold-500' : 'bg-ink-800/60 hover:bg-gold-500/5') + '" aria-pressed="' + on + '">' +
+        '<div class="flex items-center justify-between mb-2"><h3 class="font-bold text-lg ' + (on ? 'text-gold-400' : 'text-gold-300') + '">' + s.name + '</h3><i data-lucide="' + (on ? 'map-pin' : 'chevron-right') + '" class="w-5 h-5 text-gold-500"></i></div>' +
+        (on ? '<ul class="text-sm text-[#cfc5ad] grid gap-2">' +
+          '<li class="flex gap-2"><i data-lucide="map-pin" class="w-4 h-4 mt-0.5 text-gold-500 shrink-0"></i>' + s.addr + '</li>' +
+          '<li class="flex gap-2"><i data-lucide="phone" class="w-4 h-4 mt-0.5 text-gold-500 shrink-0"></i>' + s.tel + '</li>' +
+          s.hours.map(h => '<li class="flex gap-2"><i data-lucide="clock" class="w-4 h-4 mt-0.5 text-gold-500 shrink-0"></i>' + h[0] + '　' + h[1] + '</li>').join('') +
+          '<li class="flex flex-wrap items-center gap-2 pt-2"><span class="text-xs text-[#8d8472]">外送平台</span>' +
+            '<span class="px-3 py-1 rounded text-xs font-bold bg-[#06C167] text-black">Uber Eats</span>' +
+            '<span class="px-3 py-1 rounded text-xs font-bold bg-[#D70F64] text-white">foodpanda</span></li></ul>'
+         : '<p class="text-sm text-[#8d8472]">' + s.addr + '</p>') +
+      '</button>';
+    }).join('');
+    const s = STORES.find(x => x.id === activeStore);
+    const pin = $('#map-pin'); pin.style.left = s.pin[0]; pin.style.top = s.pin[1];
+    $('#map-label').textContent = s.name;
+    $('#map-search').textContent = 'Maison Doré ' + s.name;
+    $('#map-link').href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(s.addr);
+    icons();
+  }
+  $('#store-list').addEventListener('click', e => {
+    const b = e.target.closest('[data-store]'); if (!b) return;
+    activeStore = b.dataset.store; renderStores();
+  });
+
+  /* ================= FAQ 手風琴 ================= */
+  $('#faq-list').innerHTML = FAQS.map((f, i) =>
+    '<div class="frame bg-ink-800/60">' +
+      '<button class="w-full flex justify-between items-center gap-4 text-left px-5 py-4 font-bold text-gold-300" aria-expanded="false" aria-controls="faq-' + i + '" data-faq="' + i + '"><span>' + f.q + '</span><i data-lucide="chevron-down" class="w-5 h-5 shrink-0 transition-transform"></i></button>' +
+      '<div class="faq-body" id="faq-' + i + '"><div><p class="px-5 pb-5 text-sm text-[#cfc5ad] leading-loose">' + f.a + '</p></div></div></div>').join('');
+  $('#faq-list').addEventListener('click', e => {
+    const b = e.target.closest('[data-faq]'); if (!b) return;
+    const body = $('#faq-' + b.dataset.faq);
+    const open = !body.classList.contains('open');
+    // 一次只展開一則
+    $$('.faq-body.open').forEach(x => x.classList.remove('open'));
+    $$('[data-faq]').forEach(x => { x.setAttribute('aria-expanded', 'false'); x.querySelector('i, svg').style.transform = ''; });
+    if (open) { body.classList.add('open'); b.setAttribute('aria-expanded', 'true'); b.querySelector('i, svg').style.transform = 'rotate(180deg)'; }
+  });
+
+  /* ================= 購物車 ================= */
+  let cart = []; // [{id, qty}]
+  const drawer = $('#cart-drawer'), overlay = $('#cart-overlay');
+
+  function cartCount() { return cart.reduce((s, c) => s + c.qty, 0); }
+  function cartSubtotal() { return cart.reduce((s, c) => s + findItem(c.id).price * c.qty, 0); }
+
+  function openCart() {
+    overlay.classList.remove('hidden'); drawer.classList.remove('translate-x-full'); drawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCart() {
+    drawer.classList.add('translate-x-full'); drawer.setAttribute('aria-hidden', 'true');
+    overlay.classList.add('hidden'); document.body.style.overflow = '';
+  }
+  function renderCart() {
+    const badge = $('#cart-badge'); badge.textContent = cartCount();
+    badge.style.transform = 'scale(1.35)'; setTimeout(() => badge.style.transform = '', 180);
+    const box = $('#cart-items');
+    if (!cart.length) {
+      box.innerHTML = '<div class="text-center text-[#8d8472] py-20"><i data-lucide="shopping-bag" class="w-12 h-12 mx-auto mb-4 opacity-50"></i><p>購物車目前是空的</p><a href="#order" class="inline-block mt-4 text-gold-400 underline" data-close-cart>去挑選餐點</a></div>';
+    } else {
+      box.innerHTML = cart.map(c => {
+        const it = findItem(c.id);
+        return '<div class="flex gap-4 pb-4 border-b border-gold-500/15">' +
+          '<img data-img src="' + it.img + '" alt="' + it.name + '" class="w-20 h-20 object-cover rounded-sm shrink-0 img-fallback">' +
+          '<div class="flex-1 min-w-0"><h3 class="font-bold text-sm text-gold-300 leading-snug">' + it.name + '</h3>' +
+          '<p class="text-sm text-[#a8a190] mt-1">' + money(it.price) + '</p>' +
+          '<div class="flex items-center justify-between mt-2">' +
+            '<div class="flex items-center border border-gold-500/40 rounded-full">' +
+              '<button data-dec="' + c.id + '" class="w-8 h-8 grid place-items-center hover:text-gold-400" aria-label="減少數量"><i data-lucide="minus" class="w-4 h-4"></i></button>' +
+              '<span class="w-8 text-center text-sm" aria-live="polite">' + c.qty + '</span>' +
+              '<button data-inc="' + c.id + '" class="w-8 h-8 grid place-items-center hover:text-gold-400" aria-label="增加數量"><i data-lucide="plus" class="w-4 h-4"></i></button></div>' +
+            '<button data-del="' + c.id + '" class="text-[#8d8472] hover:text-red-400 p-2" aria-label="刪除商品"><i data-lucide="trash-2" class="w-4 h-4"></i></button>' +
+          '</div></div></div>';
+      }).join('');
+    }
+    const sub = cartSubtotal();
+    $('#cart-subtotal').textContent = money(sub); $('#cart-total').textContent = money(sub);
+    $('#checkout-btn').disabled = !cart.length;
+    bindImg(box); icons();
+  }
+  function addToCart(id, silent) {
+    const row = cart.find(c => c.id === id);
+    if (row) row.qty++; else cart.push({ id: id, qty: 1 });
+    renderCart();
+    if (!silent) toast('已加入購物車：' + findItem(id).name);
+  }
+
+  document.addEventListener('click', e => {
+    const add = e.target.closest('[data-add]'); if (add) { addToCart(add.dataset.add); return; }
+    const buy = e.target.closest('[data-buy]'); if (buy) { addToCart(buy.dataset.buy, true); openCart(); return; }
+    if (e.target.closest('[data-close-cart]')) closeCart();
+  });
+  $('#cart-items').addEventListener('click', e => {
+    const inc = e.target.closest('[data-inc]'), dec = e.target.closest('[data-dec]'), del = e.target.closest('[data-del]');
+    if (inc) { cart.find(c => c.id === inc.dataset.inc).qty++; }
+    else if (dec) { const r = cart.find(c => c.id === dec.dataset.dec); r.qty--; if (r.qty <= 0) cart = cart.filter(c => c !== r); }
+    else if (del) { cart = cart.filter(c => c.id !== del.dataset.del); toast('已移除商品'); }
+    else return;
+    renderCart();
+  });
+  $('#cart-open').addEventListener('click', openCart);
+  $('#cart-close').addEventListener('click', closeCart);
+  overlay.addEventListener('click', closeCart);
+
+  /* ================= 結帳流程 ================= */
+  const modal = $('#checkout-modal'), form = $('#checkout-form'), success = $('#checkout-success');
+  $('#f-store').innerHTML = STORES.map(s => '<option value="' + s.name + '">' + s.name + '</option>').join('');
+  const FREE_SHIP = 1500, SHIP_FEE = 80;
+
+  function currentMode() { return form.elements.mode.value; }
+  function calcFee() { return currentMode() === 'delivery' && cartSubtotal() < FREE_SHIP ? SHIP_FEE : 0; }
+  function renderCheckout() {
+    const mode = currentMode();
+    $('#addr-field').classList.toggle('hidden', mode !== 'delivery');
+    $('#store-field').classList.toggle('hidden', mode === 'delivery');
+    $('#co-lines').innerHTML = cart.map(c => { const it = findItem(c.id); return '<div class="flex justify-between gap-3"><span class="truncate">' + it.name + ' × ' + c.qty + '</span><span class="shrink-0">' + money(it.price * c.qty) + '</span></div>'; }).join('');
+    const sub = cartSubtotal(), fee = calcFee();
+    $('#co-sub').textContent = money(sub);
+    $('#co-fee').textContent = mode === 'delivery' ? (fee ? money(fee) : '免運') : '—';
+    $('#co-total').textContent = money(sub + fee);
+  }
+  function openModal(m) { m.classList.remove('hidden'); m.classList.add('flex'); document.body.style.overflow = 'hidden'; }
+  function closeModal(m) { m.classList.add('hidden'); m.classList.remove('flex'); document.body.style.overflow = ''; }
+
+  $('#checkout-btn').addEventListener('click', () => {
+    if (!cart.length) return;
+    closeCart(); form.classList.remove('hidden'); success.classList.add('hidden');
+    $$('.err').forEach(p => p.textContent = '');
+    renderCheckout(); openModal(modal); icons();
+  });
+  $('#mode-group').addEventListener('change', renderCheckout);
+  $('#checkout-close').addEventListener('click', () => closeModal(modal));
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(modal); });
+
+  function setErr(name, msg) { const p = $('.err[data-for="' + name + '"]'); if (p) p.textContent = msg; return !msg; }
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const v = n => form.elements[n].value.trim();
+    let ok = true;
+    ok = setErr('name', v('name') ? '' : '請輸入姓名') && ok;
+    ok = setErr('phone', /^09\d{8}$/.test(v('phone').replace(/[-\s]/g, '')) ? '' : '請輸入正確手機號碼（09 開頭 10 碼）') && ok;
+    ok = setErr('email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('email')) ? '' : '請輸入正確 Email') && ok;
+    if (currentMode() === 'delivery') ok = setErr('address', v('address').length >= 6 ? '' : '請輸入完整宅配地址') && ok;
+    else setErr('address', '');
+    if (!ok) { toast('請修正表單欄位', 'error'); return; }
+
+    const mode = currentMode();
+    const no = 'MD' + new Date().toISOString().slice(2, 10).replace(/-/g, '') + '-' + String(Math.floor(1000 + Math.random() * 9000));
+    $('#ok-no').textContent = no;
+    const total = money(cartSubtotal() + calcFee());
+    const msgs = { dinein: '我們已為您保留 ' + v('store') + ' 的座位，餐點將於入座後現點現煎。', takeout: '請於約 20 分鐘後至 ' + v('store') + ' 取餐。', delivery: '預計 1–2 小時內送達：' + v('address') + '。' };
+    $('#ok-msg').textContent = v('name') + ' 您好，訂單總額 ' + total + '。' + msgs[mode] + ' 確認信已寄至 ' + v('email') + '（示範）。';
+    form.classList.add('hidden'); success.classList.remove('hidden');
+    cart = []; renderCart(); form.reset(); icons();
+    modal.scrollTop = 0;
+  });
+  $('#ok-close').addEventListener('click', () => { closeModal(modal); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+  /* ================= 頁尾：電子報 / 政策 ================= */
+  $('#year').textContent = new Date().getFullYear();
+  $('#newsletter-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const em = $('#nl-email').value.trim(), msg = $('#nl-msg');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { msg.textContent = '請輸入正確的 Email'; msg.className = 'text-xs mt-2 h-4 text-red-400'; return; }
+    msg.textContent = '訂閱成功，感謝您的加入！'; msg.className = 'text-xs mt-2 h-4 text-gold-400';
+    toast('電子報訂閱成功'); e.target.reset();
+  });
+  const policy = $('#policy-modal');
+  function showPolicy(t, b) { $('#policy-title').textContent = t; $('#policy-body').textContent = b; openModal(policy); }
+  $('#privacy-link').addEventListener('click', e => { e.preventDefault(); showPolicy('隱私權政策', '本站僅為示範用途。我們僅會在您主動提供時蒐集姓名、聯絡方式與訂單資料，用於訂單處理與客戶服務，不會未經同意提供予第三方。您可隨時來信要求查詢、更正或刪除個人資料。'); });
+  $('#terms-link').addEventListener('click', e => { e.preventDefault(); showPolicy('服務條款', '本站為品牌網站示範，訂單流程不會產生實際交易。實際營運時，商品價格、供貨與配送範圍以門市公告為準。'); });
+  $('#policy-close').addEventListener('click', () => closeModal(policy));
+  policy.addEventListener('click', e => { if (e.target === policy) closeModal(policy); });
+
+  // ESC 關閉
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    closeCart(); closeModal(modal); closeModal(policy);
+  });
+
+  /* ================= 進場動畫與數字計數 ================= */
+  function runCount(el) {
+    const target = +el.dataset.count, dur = 1600, t0 = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString('en-US');
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+  function observe() {
+    if (!('IntersectionObserver' in window)) { $$('.reveal').forEach(r => r.classList.add('show')); $$('[data-count]').forEach(runCount); return; }
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('show');
+        $$('[data-count]', en.target).forEach(runCount);
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0.15 });
+    $$('.reveal').forEach(r => io.observe(r));
+  }
+
+  /* ================= 初始化 ================= */
+  renderTabs(); renderMenu(); renderStores(); renderCart();
+  bindImg(document); observe(); icons();
+  // Lucide 若較晚載入，補一次
+  window.addEventListener('load', icons);
+})();
+</script>
+</body>
+</html>
